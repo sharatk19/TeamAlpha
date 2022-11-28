@@ -1,0 +1,2 @@
+public class ShipSquare {
+}
