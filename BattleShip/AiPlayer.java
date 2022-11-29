@@ -1,15 +1,17 @@
 package BattleShip;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class AiPlayer implements Serializable{
-    boolean search = false;
+    ArrayList<Move> moves = new ArrayList<>();
+    boolean search = true;
 
-    public AiPlayer() {
-
+    private Strategy selectStrategy(Board board) {
+        return new Search();
     }
 
-    public void bestMove(Board board) {
-
+    private int[] executeStrategy(Board board) {
+        return selectStrategy(board).executeMove(board, moves);
     }
 }
