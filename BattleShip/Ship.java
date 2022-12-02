@@ -170,4 +170,15 @@ public class Ship {
         }
         return str.toString();
     }
+
+    public boolean cHelper(ShipSquare s1, ShipSquare s2, ShipSquare s3) {
+        return (s3.y - s1.y) * (s2.x - s1.x) > (s2.y - s1.y) * (s3.x - s1.x);
+    }
+
+    public boolean checkCollision(Ship ship) {
+        return cHelper(this.body[0], ship.body[0], ship.body[ship.body.length-1]) !=
+                cHelper(this.body[this.body.length-1], ship.body[0], ship.body[ship.body.length-1]) &&
+                cHelper(this.body[0], this.body[this.body.length-1], ship.body[0]) !=
+                        cHelper(this.body[0], this.body[this.body.length-1], ship.body[ship.body.length-1]);
+    }
 }
