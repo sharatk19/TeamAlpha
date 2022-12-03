@@ -10,8 +10,8 @@ public class Ship {
     private int health;
     private boolean horizontal = true;
     static private Ship[] pieces;	// array of rotations for this piece
-    private int x;
-    private int y;
+    int x;
+    int y;
 
 
     // Size constants for the standard 5 ships

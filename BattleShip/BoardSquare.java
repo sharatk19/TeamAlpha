@@ -21,6 +21,9 @@ public class BoardSquare {
     }
 
     public Ship testShot() {
+        if (this.state > 0) {
+            return null;
+        }
         if (ship == null) {
             state = MISS;
         } else {

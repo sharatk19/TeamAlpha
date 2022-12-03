@@ -5,8 +5,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.util.Iterator;
-import java.util.Random;
 
 public class BattleShipModel {
 
@@ -27,7 +25,12 @@ public class BattleShipModel {
 
     // State of the game
     protected boolean gameOn;	// true if we are playing
+    protected int gamePhase;
 
+    public enum PlayerType {
+        HUMAN,
+        COMP
+    }
     public enum MoveType {
         ROTATE,
         LEFT,
@@ -79,12 +82,16 @@ public class BattleShipModel {
         return this.ai_board;
     }
 
+    public int getGamePhase() {
+        return this.gamePhase;
+    }
+
 
     /**
      * Setter For Player Ships
      */
     public void playerShip_setup(){
-        return;
+        addNewShip();
     }
 
     /**
@@ -123,69 +130,55 @@ public class BattleShipModel {
         return HEIGHT + BUFFERZONE;
     }
 
-
-
-
     /**
      * Compute New Position of Ship in play based on move type to Place ship
      *
      * @param verb type of move to account for when placing shi[
      */
     public void computeNewPosition(MoveType verb) {
-
-        // As a starting point, the new position is the same as the old
-        nextShip = currentShip;
         newX = currentX;
         newY = currentY;
 
         // Make changes based on the verb
         switch (verb) {
-            case LEFT: newX--; break; //move left
+            case LEFT -> newX--;
+            //move left
 
-            case RIGHT: newX++; break; //move right
+            case RIGHT -> newX++;
+            //move right
 
-            case ROTATE: //rotate
-                nextShip.rotate();
-                newX = newX + (currentShip.getWidth() - currentShip.getWidth())/2;
-                newY = newY + (currentShip.getHeight() - currentShip.getHeight())/2;
-                break;
-
-            case DOWN: //down
-                newY--;
-                break;
-
-            default: //doh!
-                throw new RuntimeException("Bad movement!");
+            case ROTATE -> //rotate
+                    currentShip.rotate();
+            case DOWN -> //down
+                    newY--;
+            default -> //doh!
+                    throw new RuntimeException("Bad movement!");
         }
-
     }
 
     /**
      * Put new piece in to play in the Player Ship Board
      */
-    public int addNewShipForPlayer() {
-
-
+    public void addNewShip() {
         // commit things the way they are
-//        player_board.commit();
+        player_board.commit(currentShip);
         currentShip = null;
 
-
         if(!ships.hasNext()){
-           return 1;
+           gamePhase += 1;
+           return;
         }
         Ship piece = ships.next();
 
         // Center it up at the top
         int px = (player_board.getWidth() - piece.getWidth())/2;
-        int py = player_board.getHeight() - piece.getHeight()/2;
+        int py = (player_board.getHeight() - piece.getHeight())/2;
 
         int result = setCurrent(piece, px, py);
 
         if (result > 1) {
             stopGame(); //oops, we lost.
         }
-        return 0;
     }
 
 
@@ -225,12 +218,14 @@ public class BattleShipModel {
      * Each tick is associated with a move of some kind!
      * Put the move in play by executing this.
      */
-    public void modelTick(MoveType verb) {
+    public void modelTick(MoveType verb, int x, int y, PlayerType type) {
 
         if (!gameOn) return;
 
-        executeMove(verb);
-
+        switch (gamePhase) {
+            case 0 -> executeMove(verb);
+            case 1 -> executeShot(x, y, type);
+        }
     }
 
     /**
@@ -252,6 +247,10 @@ public class BattleShipModel {
 
 
         if (currentShip != null) {
+            if (verb == MoveType.DROP) {
+                player_board.placePiece(currentShip, currentX, currentY);
+                return;
+            }
             player_board.undo();	// remove the piece from its old position
         }
         computeNewPosition(verb);
@@ -259,19 +258,23 @@ public class BattleShipModel {
         // try out the new position (and roll it back if it doesn't work)
         int result = setCurrent(nextShip, newX, newY);
 
-        boolean failed = (result >= player_board.ADD_OUT_BOUNDS);
+        boolean failed = (result >= Board.ADD_OUT_BOUNDS);
 
         // if it didn't work, put it back the way it was
         if (failed) {
-            if (currentShip != null) player_board.placePiece(currentShip, currentX, currentY);
-        }
-
-
-            // Otherwise, add another ship for player board
+            if (currentShip != null) {
+                currentShip.rotate();
+                player_board.placePiece(currentShip, currentX, currentY);
+            }
+        }   // Otherwise, add another ship for player board
             else {
-                addNewShipForPlayer();
+                addNewShip();
             }
 
+    }
+
+    private void executeShot(int x, int y, PlayerType type) {
+        return;
     }
 
     /**

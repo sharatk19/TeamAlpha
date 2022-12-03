@@ -64,7 +64,7 @@ public class Board {
         return height;
     }
 
-    public void testShot(int x, int y) {
+    public int testShot(int x, int y) {
         Ship ship = this.board[x][y].testShot();
 
         if (ship != null) {
@@ -73,7 +73,10 @@ public class Board {
                 liveShips.remove(ship);
                 deadShips.add(ship);
             }
+        } else {
+            return 1;
         }
+        return 0;
     }
 
     /**
@@ -155,16 +158,19 @@ public class Board {
      *
      * @return 0 for good commit, 1 for bad commit
      */
-    public int commit(Ship ship, int x, int y) {
-        for (Ship s: liveShips) {
-            if (ship.checkCollision(s, x, y)) {
-                return 1;
+    public int commit(Ship ship) {
+        if (ship != null) {
+            for (Ship s: liveShips) {
+                if (ship.checkCollision(s, ship.x, ship.y)) {
+                    return 1;
+                }
+            }
+
+            for (ShipSquare square: ship.getBody()) {
+                board[square.x + ship.x][square.y + ship.y].setShip(ship);
             }
         }
 
-        for (ShipSquare square: ship.getBody()) {
-            board[square.x + x][square.y + y].setShip(ship);
-        }
 
         backupGrid();
         committed = true;
