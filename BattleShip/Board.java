@@ -64,6 +64,18 @@ public class Board {
         return height;
     }
 
+    public void testShot(int x, int y) {
+        Ship ship = this.board[x][y].testShot();
+
+        if (ship != null) {
+            boolean destroyed = ship.hit();
+            if (destroyed) {
+                liveShips.remove(ship);
+                deadShips.add(ship);
+            }
+        }
+    }
+
     /**
      * Returns true if the given block is filled in the board. Blocks outside of the
      * valid width/height area always return true (as we can't place anything there).
@@ -126,7 +138,6 @@ public class Board {
             System.arraycopy(backupGrid[i], 0, viewGrid[i], 0, backupGrid[i].length);
         }
 
-
         committed = true;
     }
 
@@ -142,11 +153,11 @@ public class Board {
     /**
      * Puts the board in the 'committed' state.
      *
-     * @return 0 for good commit,
+     * @return 0 for good commit, 1 for bad commit
      */
     public int commit(Ship ship, int x, int y) {
         for (Ship s: liveShips) {
-            if (ship.checkCollision(s)) {
+            if (ship.checkCollision(s, x, y)) {
                 return 1;
             }
         }

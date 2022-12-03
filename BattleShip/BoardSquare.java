@@ -20,13 +20,13 @@ public class BoardSquare {
         return ship == null;
     }
 
-    public int testShot() {
+    public Ship testShot() {
         if (ship == null) {
-            state = 1;
+            state = MISS;
         } else {
-            state = 2;
+            state = HIT;
         }
 
-        return state;
+        return ship;
     }
 }

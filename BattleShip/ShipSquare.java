@@ -66,4 +66,12 @@ public class ShipSquare implements Serializable, Comparable<ShipSquare> {
         if(this.x > o.x || this.x == o.x && this.y > o.y) return 1;
         return -1;
     }
+
+    public int absX(int x) {
+        return this.x + x;
+    }
+
+    public int absY(int y) {
+        return this.y + y;
+    }
 }

@@ -7,9 +7,11 @@ public class Ship {
     private ShipSquare[] body; // y and x values that make up the body of the piece.
     private int width;
     private int height;
-    private Ship next; // We'll use this to link each piece to its "next" rotation.
+    private int health;
     private boolean horizontal = true;
     static private Ship[] pieces;	// array of rotations for this piece
+    private int x;
+    private int y;
 
 
     // Size constants for the standard 5 ships
@@ -36,6 +38,7 @@ public class Ship {
         this.name = name;
         this.height = 1;
         this.width = size;
+        this.health = size;
 
         for (int i = 0; i < size; i++) {
             body[i] = new ShipSquare(0, i);
@@ -72,6 +75,11 @@ public class Ship {
 
     public String getName() {
         return this.name;
+    }
+
+    public boolean hit() {
+        this.health -= 1;
+        return this.health == 0;
     }
 
     /**
@@ -115,15 +123,14 @@ public class Ship {
      *
      * @return a list of all the rotations for all the given pieces.
      */
-    public static Ship[] getPieces() {
+    public static Ship[] getShips() {
         if (Ship.pieces==null) {
-            Ship.pieces = new Ship[]{
-                    new Ship("CARRIER", DEFAULTS.get("CARRIER")),
-                    new Ship("BATTLESHIP", DEFAULTS.get("BATTLESHIP")),
-                    new Ship("SUBMARINE", DEFAULTS.get("SUBMARINE")),
-                    new Ship("DESTROYER", DEFAULTS.get("DESTROYER")),
-                    new Ship("CRUISER", DEFAULTS.get("CRUISER"))
-            };
+            ArrayList<Ship> ships = new ArrayList<>();
+
+            for (String key: Ship.DEFAULTS.keySet()){
+                ships.add(new Ship(key, Ship.DEFAULTS.get(key)));
+            }
+            Ship.pieces = ships.toArray(new Ship[0]);
         }
         return Ship.pieces;
     }
@@ -136,7 +143,7 @@ public class Ship {
      *
      * @return the next rotation of the given piece
      */
-    public Ship fastRotation() {
+    public void rotate() {
         if (horizontal) {
             for (ShipSquare shipSquare : this.body) {
                 shipSquare.y = shipSquare.x;
@@ -155,7 +162,6 @@ public class Ship {
         }
 
         horizontal = !horizontal;
-        return next;
     }
 
     /**
@@ -171,14 +177,25 @@ public class Ship {
         return str.toString();
     }
 
-    public boolean cHelper(ShipSquare s1, ShipSquare s2, ShipSquare s3) {
-        return (s3.y - s1.y) * (s2.x - s1.x) > (s2.y - s1.y) * (s3.x - s1.x);
+    public int[] getAbsHead() {
+        return new int[]{this.body[0].x + this.x, this.body[0].y + y};
     }
 
-    public boolean checkCollision(Ship ship) {
-        return cHelper(this.body[0], ship.body[0], ship.body[ship.body.length-1]) !=
-                cHelper(this.body[this.body.length-1], ship.body[0], ship.body[ship.body.length-1]) &&
-                cHelper(this.body[0], this.body[this.body.length-1], ship.body[0]) !=
-                        cHelper(this.body[0], this.body[this.body.length-1], ship.body[ship.body.length-1]);
+    public int[] getAbsTail() {
+        return new int[]{this.body[this.body.length-1].x + this.x, this.body[this.body.length-1].y + y};
+    }
+
+    public boolean cHelper(int[] s1, int[] s2, int[] s3) {
+        return (s3[1] - s1[1]) * (s2[0] - s1[0]) > (s2[1] - s1[1]) * (s3[0] - s1[0]);
+    }
+
+    public boolean checkCollision(Ship ship, int x, int y) {
+        this.x = x;
+        this.y = y;
+
+        return cHelper(this.getAbsHead(), ship.getAbsHead(), ship.getAbsTail()) !=
+                cHelper(this.getAbsTail(), ship.getAbsHead(), ship.getAbsTail()) &&
+                cHelper(this.getAbsHead(), this.getAbsTail(), ship.getAbsHead()) !=
+                        cHelper(this.getAbsHead(), this.getAbsTail(), ship.getAbsTail());
     }
 }
