@@ -18,6 +18,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
@@ -27,9 +28,13 @@ public class BattleShipView {
     BattleShipModel model; //reference to model
     Stage stage;
 
-    Button startButton, stopButton, loadButton, saveButton, newButton; //buttons for functions
+    Button startButton, stopButton, loadButton, saveButton, newButton, resetbutton; //buttons for functions
     Label scoreLabel = new Label("");
     Label gameModeLabel = new Label("");
+
+    Label ai_ship_count_label = new Label("");
+
+    Label player_ship_count = new Label("");
     ArrayList<ArrayList<Button>> temp;
     BorderPane borderPane;
     Canvas canvas;
@@ -82,6 +87,19 @@ public class BattleShipView {
         gameModeLabel.setFont(new Font(20));
         gameModeLabel.setStyle("-fx-text-fill: #e8e6e3");
 
+
+        ai_ship_count_label.setId("Ai Ships Destroyed: ");
+        ai_ship_count_label.setText("AI SHIPS DESTROYED: ");
+        ai_ship_count_label.setMinWidth(250);
+        ai_ship_count_label.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
+        ai_ship_count_label.setStyle("-fx-text-fill: white;");
+
+        player_ship_count.setId("Player Ships Destroyed: ");
+        player_ship_count.setText("Player SHIPS DESTROYED: ");
+        player_ship_count.setMinWidth(250);
+        player_ship_count.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
+        player_ship_count.setStyle("-fx-text-fill: white;");
+
         final ToggleGroup toggleGroup = new ToggleGroup();
 
 //        RadioButton pilotButtonHuman = new RadioButton("Human");
@@ -96,7 +114,6 @@ public class BattleShipView {
 //        pilotButtonComputer.setUserData(Color.SALMON);
 //        pilotButtonComputer.setFont(new Font(16));
 //        pilotButtonComputer.setStyle("-fx-text-fill: #e8e6e3");
-
         scoreLabel.setText("Ships Destroyed: 0");
         scoreLabel.setFont(new Font(20));
         scoreLabel.setStyle("-fx-text-fill: #e8e6e3");
@@ -132,21 +149,27 @@ public class BattleShipView {
         newButton.setFont(new Font(12));
         newButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
 
-        HBox controls = new HBox(20, saveButton, loadButton, newButton, startButton, stopButton);
+
+        resetbutton = new Button("Reset Placement");
+        resetbutton.setId("Reset");
+        resetbutton.setPrefSize(150, 50);
+
+        HBox controls = new HBox(20, saveButton, loadButton, newButton, startButton, stopButton, resetbutton);
         controls.setPadding(new Insets(20, 20, 20, 20));
         controls.setAlignment(Pos.CENTER);
 
-//        Slider slider = new Slider(0, 100, 50);
-//        slider.setShowTickLabels(true);
-//        slider.setStyle("-fx-control-inner-background: palegreen;");
 
-//        VBox vBox = new VBox(20, slider);
-//        vBox.setPadding(new Insets(20, 20, 20, 20));
-//        vBox.setAlignment(Pos.TOP_CENTER);
+        Slider slider = new Slider(0, 100, 50);
+        slider.setShowTickLabels(true);
+        slider.setStyle("-fx-control-inner-background: palegreen;");
 
-//        VBox scoreBox = new VBox(20, scoreLabel, gameModeLabel, pilotButtonHuman, pilotButtonComputer);
-//        scoreBox.setPadding(new Insets(20, 20, 20, 20));
-//        vBox.setAlignment(Pos.TOP_CENTER);
+        VBox vBox = new VBox(20, slider);
+        vBox.setPadding(new Insets(20, 20, 20, 20));
+        vBox.setAlignment(Pos.TOP_CENTER);
+
+        VBox scoreBox = new VBox(20, ai_ship_count_label, player_ship_count);
+        scoreBox.setPadding(new Insets(20, 20, 20, 20));
+        vBox.setAlignment(Pos.TOP_CENTER);
 
 //        toggleGroup.selectedToggleProperty().addListener((observable, oldVal, newVal) -> swapPilot(newVal));
 
@@ -155,6 +178,13 @@ public class BattleShipView {
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
+
+
+        resetbutton.setOnAction(e -> {
+            //TO DO!
+            this.createBoard();
+            this.borderPane.requestFocus();
+        });
         //configure this such that you start a new game when the user hits the newButton
         //Make sure to return the focus to the borderPane once you're done!
         newButton.setOnAction(e -> {
@@ -165,7 +195,8 @@ public class BattleShipView {
         //configure this such that you restart the game when the user hits the startButton
         //Make sure to return the focus to the borderPane once you're done!
         startButton.setOnAction(e -> {
-            this.model.resumeGame();
+            createAIBoard();
+
             this.borderPane.requestFocus();
         });
 
@@ -229,13 +260,15 @@ public class BattleShipView {
         });
 
         borderPane.setTop(controls);
-//        borderPane.setRight(scoreBox);
+        borderPane.setBottom(scoreBox);
         borderPane.setCenter(canvas);
 //        borderPane.setBottom(vBox);
 
         var scene = new Scene(borderPane, 1000, 720);
         this.stage.setScene(scene);
         this.stage.show();
+        createBoard();
+        createAIBoard();
     }
 
     /**
@@ -261,8 +294,7 @@ public class BattleShipView {
      */
     private void updateBoard() {
         if (this.paused != true) {
-            createBoard();
-            createAIBoard();
+
 //            paintBoard();
             this.model.modelTick(BattleShipModel.MoveType.ROTATE,  0, 0, BattleShipModel.PlayerType.HUMAN);
 //            updateScore();
