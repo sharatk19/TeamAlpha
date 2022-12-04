@@ -233,7 +233,7 @@ public class BattleShipView {
         borderPane.setCenter(canvas);
 //        borderPane.setBottom(vBox);
 
-        var scene = new Scene(borderPane, 800, 800);
+        var scene = new Scene(borderPane, 1000, 720);
         this.stage.setScene(scene);
         this.stage.show();
     }
@@ -262,6 +262,7 @@ public class BattleShipView {
     private void updateBoard() {
         if (this.paused != true) {
             createBoard();
+            createAIBoard();
 //            paintBoard();
             this.model.modelTick(BattleShipModel.MoveType.ROTATE,  0, 0, BattleShipModel.PlayerType.HUMAN);
 //            updateScore();
@@ -307,6 +308,8 @@ public class BattleShipView {
         for(int x = 0; x< 10; x++){
             for(int y = 0; y < 10; y++){
                 Button button = new Button();
+                button.setTranslateX(550);
+                button.setTranslateY(200);
                 button.setPrefHeight(30);
                 button.setPrefWidth(30);
                 GridPane.setConstraints(button, y, x);
@@ -327,6 +330,41 @@ public class BattleShipView {
         borderPane.getChildren().add(player_board);
     }
 
+    public void createAIBoard(){
+        GridPane player_board = new GridPane();
+        for(int i = 0; i < 10; i++){
+            player_board.getColumnConstraints().add(new ColumnConstraints(30));
+            player_board.getRowConstraints().add(new RowConstraints(30));
+        }
+        ArrayList<Button> temp2 = new ArrayList<>();
+
+        for(int x = 0; x< 10; x++){
+            for(int y = 0; y < 10; y++){
+                Button button = new Button();
+                button.setTranslateX(100);
+                button.setTranslateY(200);
+                button.setPrefHeight(30);
+                button.setPrefWidth(30);
+                GridPane.setConstraints(button, y, x);
+                player_board.getChildren().add(button);
+                temp2.add(button);
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        System.out.println("Attacked Enemy on ShipSquare on Row:" + GridPane.getRowIndex(button));
+                        System.out.println("Attacked Enemy on on Column:" + GridPane.getColumnIndex(button));
+                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: grey;");
+                    }
+                });
+            }
+            temp.add(temp2);
+            temp2 = new ArrayList<>();
+        }
+        borderPane.getChildren().add(player_board);
+    }
+    public void timer(){
+        return;
+    }
 
 
 
