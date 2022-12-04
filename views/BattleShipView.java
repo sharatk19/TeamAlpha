@@ -3,6 +3,7 @@ package views;
 
 import BattleShip.BattleShipModel;
 
+import BattleShip.BoardSquare;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -179,7 +180,7 @@ public class BattleShipView {
 //        toggleGroup.selectedToggleProperty().addListener((observable, oldVal, newVal) -> swapPilot(newVal));
 
 //        timeline structures the animation, and speed between application "ticks"
-        timeline = new Timeline(new KeyFrame(Duration.seconds(1.00), e -> updateBoard()));
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.2), e -> updateBoard()));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
@@ -355,17 +356,18 @@ public class BattleShipView {
                 button.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
-                        System.out.println("Placed ShipSquare on Row:" + GridPane.getRowIndex(button));
-                        System.out.println("Placed ShipSquare on Column:" + GridPane.getColumnIndex(button));
-                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+//                        System.out.println("Placed ShipSquare on Row:" + GridPane.getRowIndex(button));
+//                        System.out.println("Placed ShipSquare on Column:" + GridPane.getColumnIndex(button));
+//                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+                        model.placeShip();
                     }
                 });
                 button.setOnMouseEntered(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
                         model.hoverMove(GridPane.getRowIndex(button), GridPane.getColumnIndex(button));
-                        System.out.println();
-                        Arrays.stream(model.get_player_Board().getViewGrid()).forEach(s -> System.out.println(Arrays.toString(s)));
+//                        System.out.println();
+//                        Arrays.stream(model.get_player_Board().getViewGrid()).forEach(s -> System.out.println(Arrays.toString(s)));
                     }
                 });
             }
@@ -396,9 +398,10 @@ public class BattleShipView {
                 button.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent actionEvent) {
-                        System.out.println("Attacked Enemy on ShipSquare on Row:" + GridPane.getRowIndex(button));
-                        System.out.println("Attacked Enemy on on Column:" + GridPane.getColumnIndex(button));
-                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+//                        System.out.println("Attacked Enemy on ShipSquare on Row:" + GridPane.getRowIndex(button));
+//                        System.out.println("Attacked Enemy on Column:" + GridPane.getColumnIndex(button));
+//                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+                        model.executeShot(GridPane.getRowIndex(button), GridPane.getColumnIndex(button), BattleShipModel.PlayerType.HUMAN);
                     }
                 });
             }
@@ -416,16 +419,29 @@ public class BattleShipView {
 
     public void paintBoard() {
         boolean[][] playerGrid = model.get_player_Board().getViewGrid();
+        BoardSquare[][] pBoard = model.get_player_Board().getBoard();
+        BoardSquare[][] aBoard = model.get_ai_Board().getBoard();
 
-        for (int x = 0; x < model.get_player_Board().getWidth(); x++) {
-            for (int y = 0; y < model.get_player_Board().getHeight(); y++) {
-//                System.out.println(playerBoard.getChildren());
-                Button button = (Button) playerBoard.getChildren().get(x + y);
-                if (playerGrid[x][y]) {
-                    button.setStyle("-fx-background-color: red; -fx-text-fill: grey;");
-                } else {
-                    button.setStyle("-fx-background-color: grey; -fx-text-fill: grey;");
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                Button pButton = (Button) playerBoard.getChildren().get(10*x + y);
+                Button aButton = (Button) aiBoard.getChildren().get(10*x + y);
+                if (model.getGamePhase() == 0) {
+                    if (playerGrid[x][y]) {
+                        pButton.setStyle("-fx-background-color: red; -fx-text-fill: grey;");
+                    } else {
+                        pButton.setStyle(null);
+                    }
+                } else if (model.getGamePhase() == 1) {
+                    if (pBoard[x][y].hasShip()) {
+                        pButton.setStyle("-fx-background-color: red; -fx-text-fill: grey;");
+                    }
+
+                    if (aBoard[x][y].getState() == 1) {
+                        aButton.setStyle("-fx-background-color: red; -fx-text-fill: grey;");
+                    }
                 }
+
             }
         }
 

@@ -10,7 +10,6 @@ public class BattleShipModel {
 
     public static final int WIDTH = 10; //size of the board in blocks
     public static final int HEIGHT = 10; //height of the board in blocks
-    public static final int BUFFERZONE = 4; //space at the top
 
     protected Board player_board;  // Board data structure
     protected Board ai_board;  // Board data structure
@@ -43,8 +42,8 @@ public class BattleShipModel {
      * Constructor for a tetris model
      */
     public BattleShipModel() {
-        player_board = new Board(WIDTH, HEIGHT + BUFFERZONE);
-        ai_board = new Board(WIDTH, HEIGHT + BUFFERZONE);
+        player_board = new Board(WIDTH, HEIGHT);
+        ai_board = new Board(WIDTH, HEIGHT);
         ships = Arrays.stream(Ship.getShips()).iterator();; //initialize board and pieces
         gameOn = false;
     }
@@ -127,7 +126,7 @@ public class BattleShipModel {
      * @return height (with buffer at top accounted for)
      */
     public double getHeight() {
-        return HEIGHT + BUFFERZONE;
+        return HEIGHT;
     }
 
     /**
@@ -161,7 +160,10 @@ public class BattleShipModel {
      */
     public void addNewShip() {
         // commit things the way they are
-        player_board.commit(currentShip);
+        int result = player_board.commit(currentShip);
+
+        if (result == 1) return;
+
         currentShip = null;
 
         if(!ships.hasNext()){
@@ -174,11 +176,8 @@ public class BattleShipModel {
         int px = (player_board.getWidth() - piece.getWidth())/2;
         int py = (player_board.getHeight() - piece.getHeight())/2;
 
-        int result = setCurrent(piece, px, py);
+        setCurrent(piece, px, py);
     }
-
-
-
 
 
     /**
@@ -252,12 +251,24 @@ public class BattleShipModel {
         }
     }
 
-    private void placeShip(int x, int y) {
-        addNewShip();
+    public void placeShip() {
+        if (gamePhase == 0) {
+            addNewShip();
+        }
     }
 
-    private void executeShot(int x, int y, PlayerType type) {
-        return;
+    public void executeShot(int x, int y, PlayerType type) {
+        if (gamePhase != 1) {return;}
+
+        Board board = null;
+
+        switch (type) {
+            case COMP -> board = player_board;
+            case HUMAN -> board = ai_board;
+        }
+
+        board.testShot(x, y);
+        System.out.println(1);
     }
 
     /**
