@@ -36,6 +36,8 @@ public class Board {
         viewGrid = new boolean[width][height];
         backupGrid = new boolean[width][height];
         board = new BoardSquare[width][height];
+        liveShips = new ArrayList<>();
+        deadShips = new ArrayList<>();
 
         for (BoardSquare[] col: board) {
             for (int i = 0; i < height; i++) {
@@ -77,6 +79,10 @@ public class Board {
             return 1;
         }
         return 0;
+    }
+
+    public boolean[][] getViewGrid() {
+        return viewGrid;
     }
 
     /**

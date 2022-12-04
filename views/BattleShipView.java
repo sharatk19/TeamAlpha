@@ -9,12 +9,14 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -23,6 +25,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class BattleShipView {
     BattleShipModel model; //reference to model
@@ -37,6 +40,8 @@ public class BattleShipView {
     Label player_ship_count = new Label("");
     ArrayList<ArrayList<Button>> temp;
     BorderPane borderPane;
+    GridPane aiBoard;
+    GridPane playerBoard;
     Canvas canvas;
     GraphicsContext gc; //the graphics context will be linked to the canvas
 
@@ -182,7 +187,7 @@ public class BattleShipView {
 
         resetbutton.setOnAction(e -> {
             //TO DO!
-            this.createBoard();
+            this.model.newGame();
             this.borderPane.requestFocus();
         });
         //configure this such that you start a new game when the user hits the newButton
@@ -239,25 +244,25 @@ public class BattleShipView {
         //and TetrisModel.MoveType.RIGHT
         //make sure that you don't let the human control the board
         //if the autopilot is on, however.
-        borderPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent k) {
-                //TO DO
-                if(k.getCode() == KeyCode.R){
-                    model.modelTick(BattleShipModel.MoveType.ROTATE, 0, 0, BattleShipModel.PlayerType.HUMAN);
-                }
-                else if(k.getCode() == KeyCode.S){
-                    model.modelTick(BattleShipModel.MoveType.DROP,  0, 0, BattleShipModel.PlayerType.HUMAN);
-                }
-                else if(k.getCode() == KeyCode.A){
-                    model.modelTick(BattleShipModel.MoveType.RIGHT,  0, 0, BattleShipModel.PlayerType.HUMAN);
-                }
-                else if(k.getCode() == KeyCode.D){
-                    model.modelTick(BattleShipModel.MoveType.LEFT,  0, 0, BattleShipModel.PlayerType.HUMAN);
-                }
-
-            }
-        });
+//        borderPane.setOnKeyReleased(new EventHandler<KeyEvent>() {
+//            @Override
+//            public void handle(KeyEvent k) {
+//                //TO DO
+//                if(k.getCode() == KeyCode.R){
+//                    model.modelTick(BattleShipModel.MoveType.ROTATE, 0, 0, BattleShipModel.PlayerType.HUMAN);
+//                }
+//                else if(k.getCode() == KeyCode.S){
+//                    model.modelTick(BattleShipModel.MoveType.DROP,  0, 0, BattleShipModel.PlayerType.HUMAN);
+//                }
+//                else if(k.getCode() == KeyCode.A){
+//                    model.modelTick(BattleShipModel.MoveType.RIGHT,  0, 0, BattleShipModel.PlayerType.HUMAN);
+//                }
+//                else if(k.getCode() == KeyCode.D){
+//                    model.modelTick(BattleShipModel.MoveType.LEFT,  0, 0, BattleShipModel.PlayerType.HUMAN);
+//                }
+//
+//            }
+//        });
 
         borderPane.setTop(controls);
         borderPane.setBottom(scoreBox);
@@ -293,10 +298,10 @@ public class BattleShipView {
      * Update board (paint pieces and score info)
      */
     private void updateBoard() {
-        if (this.paused != true) {
+        if (!this.paused) {
 
-//            paintBoard();
-            this.model.modelTick(BattleShipModel.MoveType.ROTATE,  0, 0, BattleShipModel.PlayerType.HUMAN);
+            paintBoard();
+//            this.model.modelTick(0, 0, BattleShipModel.PlayerType.HUMAN);
 //            updateScore();
         }
     }
@@ -330,10 +335,10 @@ public class BattleShipView {
      * Draw the board
      */
     public void createBoard(){
-        GridPane player_board = new GridPane();
+        playerBoard = new GridPane();
         for(int i = 0; i < 10; i++){
-            player_board.getColumnConstraints().add(new ColumnConstraints(30));
-            player_board.getRowConstraints().add(new RowConstraints(30));
+            playerBoard.getColumnConstraints().add(new ColumnConstraints(30));
+            playerBoard.getRowConstraints().add(new RowConstraints(30));
         }
         ArrayList<Button> temp2 = new ArrayList<>();
 
@@ -345,28 +350,36 @@ public class BattleShipView {
                 button.setPrefHeight(30);
                 button.setPrefWidth(30);
                 GridPane.setConstraints(button, y, x);
-                player_board.getChildren().add(button);
+                playerBoard.getChildren().add(button);
                 temp2.add(button);
-                button.setOnAction(new EventHandler<ActionEvent>() {
+                button.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
-                    public void handle(ActionEvent actionEvent) {
+                    public void handle(MouseEvent mouseEvent) {
                         System.out.println("Placed ShipSquare on Row:" + GridPane.getRowIndex(button));
                         System.out.println("Placed ShipSquare on Column:" + GridPane.getColumnIndex(button));
                         button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+                    }
+                });
+                button.setOnMouseEntered(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent mouseEvent) {
+                        model.hoverMove(GridPane.getRowIndex(button), GridPane.getColumnIndex(button));
+                        System.out.println();
+                        Arrays.stream(model.get_player_Board().getViewGrid()).forEach(s -> System.out.println(Arrays.toString(s)));
                     }
                 });
             }
             temp.add(temp2);
             temp2 = new ArrayList<>();
         }
-        borderPane.getChildren().add(player_board);
+        borderPane.getChildren().add(playerBoard);
     }
 
     public void createAIBoard(){
-        GridPane player_board = new GridPane();
+        aiBoard = new GridPane();
         for(int i = 0; i < 10; i++){
-            player_board.getColumnConstraints().add(new ColumnConstraints(30));
-            player_board.getRowConstraints().add(new RowConstraints(30));
+            aiBoard.getColumnConstraints().add(new ColumnConstraints(30));
+            aiBoard.getRowConstraints().add(new RowConstraints(30));
         }
         ArrayList<Button> temp2 = new ArrayList<>();
 
@@ -378,21 +391,21 @@ public class BattleShipView {
                 button.setPrefHeight(30);
                 button.setPrefWidth(30);
                 GridPane.setConstraints(button, y, x);
-                player_board.getChildren().add(button);
+                aiBoard.getChildren().add(button);
                 temp2.add(button);
                 button.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent actionEvent) {
                         System.out.println("Attacked Enemy on ShipSquare on Row:" + GridPane.getRowIndex(button));
                         System.out.println("Attacked Enemy on on Column:" + GridPane.getColumnIndex(button));
-                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: grey;");
+                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
                     }
                 });
             }
             temp.add(temp2);
             temp2 = new ArrayList<>();
         }
-        borderPane.getChildren().add(player_board);
+        borderPane.getChildren().add(aiBoard);
     }
     public void timer(){
         return;
@@ -402,33 +415,16 @@ public class BattleShipView {
 
 
     public void paintBoard() {
+        boolean[][] playerGrid = model.get_player_Board().getViewGrid();
 
-        // Draw a rectangle around the whole screen
-        gc.setStroke(Color.GREEN);
-        gc.setFill(Color.GHOSTWHITE);
-        gc.fillRect(-100, 100, 2*this.width, this.height);
-
-        // Draw the line separating the top area on the screen
-//        gc.setStroke(Color.BLACK);
-//        int spacerY = yPixel(this.model.get_player_Board().getHeight() - this.model.BUFFERZONE - 1);
-//        gc.strokeLine(0, spacerY, this.width-1, spacerY);
-
-        // Factor a few things out to help the optimizer
-        final int dx = Math.round(dX()-2);
-        final int dy = Math.round(dY()-2);
-        final int bWidth = this.model.get_player_Board().getWidth();;
-
-        int x, y;
-        // Loop through and draw all the blocks; sizes of blocks are calibrated relative to screen size
-        for (x=0; x<bWidth; x++) {
-            int left = xPixel(x);	// the left pixel
-            // draw from 0 up to the col height
-            final int yHeight = 10;
-            for (y=0; y<yHeight; y++) {
-                if (this.model.get_player_Board().getGrid(x, y)) {
-                    gc.setFill(Color.RED);
-                    gc.fillRect(left+1, yPixel(y)+1, dx, dy);
-                    gc.setFill(Color.GHOSTWHITE);
+        for (int x = 0; x < model.get_player_Board().getWidth(); x++) {
+            for (int y = 0; y < model.get_player_Board().getHeight(); y++) {
+//                System.out.println(playerBoard.getChildren());
+                Button button = (Button) playerBoard.getChildren().get(x + y);
+                if (playerGrid[x][y]) {
+                    button.setStyle("-fx-background-color: red; -fx-text-fill: grey;");
+                } else {
+                    button.setStyle("-fx-background-color: grey; -fx-text-fill: grey;");
                 }
             }
         }
