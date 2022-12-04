@@ -5,6 +5,7 @@ import BattleShip.BattleShipModel;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -14,13 +15,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import java.util.ArrayList;
 
 public class BattleShipView {
     BattleShipModel model; //reference to model
@@ -29,7 +30,7 @@ public class BattleShipView {
     Button startButton, stopButton, loadButton, saveButton, newButton; //buttons for functions
     Label scoreLabel = new Label("");
     Label gameModeLabel = new Label("");
-
+    ArrayList<ArrayList<Button>> temp;
     BorderPane borderPane;
     Canvas canvas;
     GraphicsContext gc; //the graphics context will be linked to the canvas
@@ -51,6 +52,7 @@ public class BattleShipView {
     public BattleShipView(BattleShipModel model, Stage stage) {
         this.model = model;
         this.stage = stage;
+        temp = new ArrayList<>();
         initUI();
     }
 
@@ -149,7 +151,7 @@ public class BattleShipView {
 //        toggleGroup.selectedToggleProperty().addListener((observable, oldVal, newVal) -> swapPilot(newVal));
 
 //        timeline structures the animation, and speed between application "ticks"
-        timeline = new Timeline(new KeyFrame(Duration.seconds(0.25), e -> updateBoard()));
+        timeline = new Timeline(new KeyFrame(Duration.seconds(1.00), e -> updateBoard()));
         timeline.setCycleCount(Timeline.INDEFINITE);
         timeline.play();
 
@@ -259,7 +261,8 @@ public class BattleShipView {
      */
     private void updateBoard() {
         if (this.paused != true) {
-            paintBoard();
+            createBoard();
+//            paintBoard();
             this.model.modelTick(BattleShipModel.MoveType.ROTATE,  0, 0, BattleShipModel.PlayerType.HUMAN);
 //            updateScore();
         }
@@ -293,6 +296,41 @@ public class BattleShipView {
     /**
      * Draw the board
      */
+    public void createBoard(){
+        GridPane player_board = new GridPane();
+        for(int i = 0; i < 10; i++){
+            player_board.getColumnConstraints().add(new ColumnConstraints(30));
+            player_board.getRowConstraints().add(new RowConstraints(30));
+        }
+        ArrayList<Button> temp2 = new ArrayList<>();
+
+        for(int x = 0; x< 10; x++){
+            for(int y = 0; y < 10; y++){
+                Button button = new Button();
+                button.setPrefHeight(30);
+                button.setPrefWidth(30);
+                GridPane.setConstraints(button, y, x);
+                player_board.getChildren().add(button);
+                temp2.add(button);
+                button.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        System.out.println("Placed ShipSquare on Row:" + GridPane.getRowIndex(button));
+                        System.out.println("Placed ShipSquare on Column:" + GridPane.getColumnIndex(button));
+                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+                    }
+                });
+            }
+            temp.add(temp2);
+            temp2 = new ArrayList<>();
+        }
+        borderPane.getChildren().add(player_board);
+    }
+
+
+
+
+
     public void paintBoard() {
 
         // Draw a rectangle around the whole screen
