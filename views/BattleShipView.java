@@ -62,10 +62,10 @@ public class BattleShipView {
         this.stage.setTitle("BATTLESHIP");
         this.width = this.model.getWidth()*pieceWidth + 2;
         this.height = this.model.getHeight()*pieceWidth + 2;
-
+//        -fx-background-color: #81c483;
         borderPane = new BorderPane();
-        borderPane.setStyle("-fx-background-color: #121212;");
-
+        borderPane.setStyle("-fx-background-color: linear-gradient(to top, #ff7f50, #6a5acd)");
+//        -fx-background-color: linear-gradient(to top, #ff7f50, #6a5acd)
         //add canvas
         canvas = new Canvas(this.width, this.height);
         canvas.setId("Canvas");
@@ -134,13 +134,13 @@ public class BattleShipView {
         controls.setPadding(new Insets(20, 20, 20, 20));
         controls.setAlignment(Pos.CENTER);
 
-        Slider slider = new Slider(0, 100, 50);
-        slider.setShowTickLabels(true);
-        slider.setStyle("-fx-control-inner-background: palegreen;");
+//        Slider slider = new Slider(0, 100, 50);
+//        slider.setShowTickLabels(true);
+//        slider.setStyle("-fx-control-inner-background: palegreen;");
 
-        VBox vBox = new VBox(20, slider);
-        vBox.setPadding(new Insets(20, 20, 20, 20));
-        vBox.setAlignment(Pos.TOP_CENTER);
+//        VBox vBox = new VBox(20, slider);
+//        vBox.setPadding(new Insets(20, 20, 20, 20));
+//        vBox.setAlignment(Pos.TOP_CENTER);
 
 //        VBox scoreBox = new VBox(20, scoreLabel, gameModeLabel, pilotButtonHuman, pilotButtonComputer);
 //        scoreBox.setPadding(new Insets(20, 20, 20, 20));
@@ -148,10 +148,10 @@ public class BattleShipView {
 
 //        toggleGroup.selectedToggleProperty().addListener((observable, oldVal, newVal) -> swapPilot(newVal));
 
-        //timeline structures the animation, and speed between application "ticks"
-//        timeline = new Timeline(new KeyFrame(Duration.seconds(0.25), e -> updateBoard()));
-//        timeline.setCycleCount(Timeline.INDEFINITE);
-//        timeline.play();
+//        timeline structures the animation, and speed between application "ticks"
+        timeline = new Timeline(new KeyFrame(Duration.seconds(0.25), e -> updateBoard()));
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
 
         //configure this such that you start a new game when the user hits the newButton
         //Make sure to return the focus to the borderPane once you're done!
@@ -229,7 +229,7 @@ public class BattleShipView {
         borderPane.setTop(controls);
 //        borderPane.setRight(scoreBox);
         borderPane.setCenter(canvas);
-        borderPane.setBottom(vBox);
+//        borderPane.setBottom(vBox);
 
         var scene = new Scene(borderPane, 800, 800);
         this.stage.setScene(scene);
@@ -260,7 +260,7 @@ public class BattleShipView {
     private void updateBoard() {
         if (this.paused != true) {
             paintBoard();
-            this.model.modelTick(BattleShipModel.MoveType.DOWN,  0, 0, BattleShipModel.PlayerType.HUMAN);
+            this.model.modelTick(BattleShipModel.MoveType.ROTATE,  0, 0, BattleShipModel.PlayerType.HUMAN);
 //            updateScore();
         }
     }
@@ -297,13 +297,13 @@ public class BattleShipView {
 
         // Draw a rectangle around the whole screen
         gc.setStroke(Color.GREEN);
-        gc.setFill(Color.GREEN);
-        gc.fillRect(0, 0, this.width-1, this.height-1);
+        gc.setFill(Color.GHOSTWHITE);
+        gc.fillRect(-100, 100, 2*this.width, this.height);
 
         // Draw the line separating the top area on the screen
-        gc.setStroke(Color.BLACK);
-        int spacerY = yPixel(this.model.get_player_Board().getHeight() - this.model.BUFFERZONE - 1);
-        gc.strokeLine(0, spacerY, this.width-1, spacerY);
+//        gc.setStroke(Color.BLACK);
+//        int spacerY = yPixel(this.model.get_player_Board().getHeight() - this.model.BUFFERZONE - 1);
+//        gc.strokeLine(0, spacerY, this.width-1, spacerY);
 
         // Factor a few things out to help the optimizer
         final int dx = Math.round(dX()-2);
@@ -320,7 +320,7 @@ public class BattleShipView {
                 if (this.model.get_player_Board().getGrid(x, y)) {
                     gc.setFill(Color.RED);
                     gc.fillRect(left+1, yPixel(y)+1, dx, dy);
-                    gc.setFill(Color.GREEN);
+                    gc.setFill(Color.GHOSTWHITE);
                 }
             }
         }

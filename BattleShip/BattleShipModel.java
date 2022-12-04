@@ -256,7 +256,14 @@ public class BattleShipModel {
         computeNewPosition(verb);
 
         // try out the new position (and roll it back if it doesn't work)
-        int result = setCurrent(nextShip, newX, newY);
+        int result;
+        if(nextShip != null){
+             result = setCurrent(nextShip, newX, newY);
+        }
+//        int result = setCurrent(nextShip, newX, newY);
+        else{
+            return;
+        }
 
         boolean failed = (result >= Board.ADD_OUT_BOUNDS);
 
