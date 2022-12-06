@@ -1,4 +1,5 @@
 package BattleShip;
 
-public class Player {
+public class Move {
+
 }
