@@ -18,6 +18,8 @@ import javafx.stage.Stage;
 
 public class SceneController {
 
+    SceneController controller;
+
     private Stage stage;
     private Scene scene;
     private Parent root;
@@ -46,7 +48,9 @@ public class SceneController {
     @FXML
     private AnchorPane menuBackground;
 
-
+    public void initialize(){
+        this.controller = this;
+    }
     public void switchToMainMenu(ActionEvent event) throws IOException {
         URL url = getClass().getResource("MainMenu.fxml");
         root = FXMLLoader.load(url);

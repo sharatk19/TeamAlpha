@@ -28,6 +28,7 @@ public class BattleShipView {
     BattleShipModel model; //reference to model
     Stage stage;
 
+    SceneController controller;
     Button startButton, stopButton, loadButton, saveButton, newButton, resetbutton; //buttons for functions
     Label scoreLabel = new Label("");
     Label gameModeLabel = new Label("");
@@ -55,6 +56,7 @@ public class BattleShipView {
      */
 
     public BattleShipView(BattleShipModel model, Stage stage) {
+        this.controller = new SceneController();
         this.model = model;
         this.stage = stage;
         temp = new ArrayList<>();
@@ -70,9 +72,17 @@ public class BattleShipView {
         this.width = this.model.getWidth()*pieceWidth + 2;
         this.height = this.model.getHeight()*pieceWidth + 2;
 //        -fx-background-color: #81c483;
+//        colorblind -fx-background-color: #A8A8A8;
         borderPane = new BorderPane();
-        borderPane.setStyle("-fx-background-color: linear-gradient(to top, #ff7f50, #6a5acd)");
+
+        if (controller.colorButton.isSelected()) {
+            borderPane.setStyle("-fx-background-color: linear-gradient(to top, #A0A0A0, #6B6B6B)");
+        } else {
+            borderPane.setStyle("-fx-background-color: linear-gradient(to top, #ff7f50, #6a5acd)");
+        }
 //        -fx-background-color: linear-gradient(to top, #ff7f50, #6a5acd)
+//        colorblind -fx-background-color: linear-gradient(to top, #A0A0A0, #6B6B6B)
+
         //add canvas
         canvas = new Canvas(this.width, this.height);
         canvas.setId("Canvas");
@@ -123,31 +133,51 @@ public class BattleShipView {
         startButton.setId("Start");
         startButton.setPrefSize(150, 50);
         startButton.setFont(new Font(12));
-        startButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        if (controller.colorButton.isSelected()) {
+            startButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
+        } else {
+            startButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        }
 
         stopButton = new Button("Stop");
         stopButton.setId("Start");
         stopButton.setPrefSize(150, 50);
         stopButton.setFont(new Font(12));
-        stopButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        if (controller.colorButton.isSelected()) {
+            stopButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
+        } else {
+            stopButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        }
 
         saveButton = new Button("Save");
         saveButton.setId("Save");
         saveButton.setPrefSize(150, 50);
         saveButton.setFont(new Font(12));
-        saveButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        if (controller.colorButton.isSelected()) {
+            saveButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
+        } else {
+            saveButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        }
 
         loadButton = new Button("Load");
         loadButton.setId("Load");
         loadButton.setPrefSize(150, 50);
         loadButton.setFont(new Font(12));
-        loadButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        if (controller.colorButton.isSelected()) {
+            loadButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
+        } else {
+            loadButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        }
 
         newButton = new Button("New Game");
         newButton.setId("New");
         newButton.setPrefSize(150, 50);
         newButton.setFont(new Font(12));
-        newButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        if (controller.colorButton.isSelected()) {
+            newButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
+        } else {
+            newButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+        }
 
 
         resetbutton = new Button("Reset Placement");
@@ -352,7 +382,11 @@ public class BattleShipView {
                     public void handle(ActionEvent actionEvent) {
                         System.out.println("Placed ShipSquare on Row:" + GridPane.getRowIndex(button));
                         System.out.println("Placed ShipSquare on Column:" + GridPane.getColumnIndex(button));
-                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+                        if (controller.colorButton.isSelected()) {
+                            button.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
+                        } else {
+                            button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+                        }
                     }
                 });
             }
@@ -385,7 +419,11 @@ public class BattleShipView {
                     public void handle(ActionEvent actionEvent) {
                         System.out.println("Attacked Enemy on ShipSquare on Row:" + GridPane.getRowIndex(button));
                         System.out.println("Attacked Enemy on on Column:" + GridPane.getColumnIndex(button));
-                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: grey;");
+                        if (controller.colorButton.isSelected()) {
+                            button.setStyle("-fx-background-color: #595959; -fx-text-fill: #7F7F7F;");
+                        } else {
+                            button.setStyle("-fx-background-color: #17871b; -fx-text-fill: grey;");
+                        }
                     }
                 });
             }
@@ -404,8 +442,16 @@ public class BattleShipView {
     public void paintBoard() {
 
         // Draw a rectangle around the whole screen
-        gc.setStroke(Color.GREEN);
-        gc.setFill(Color.GHOSTWHITE);
+        if (controller.colorButton.isSelected()) {
+            gc.setStroke(Color.color(150, 150, 150));
+        } else {
+            gc.setStroke(Color.GREEN);
+        }
+        if (controller.colorButton.isSelected()) {
+            gc.setFill(Color.color(248, 248, 248));
+        } else {
+            gc.setFill(Color.GHOSTWHITE);
+        }
         gc.fillRect(-100, 100, 2*this.width, this.height);
 
         // Draw the line separating the top area on the screen
@@ -426,9 +472,17 @@ public class BattleShipView {
             final int yHeight = 10;
             for (y=0; y<yHeight; y++) {
                 if (this.model.get_player_Board().getGrid(x, y)) {
-                    gc.setFill(Color.RED);
+                    if (controller.colorButton.isSelected()) {
+                        gc.setFill(Color.color(76, 76, 76));
+                    } else {
+                        gc.setFill(Color.RED);
+                    }
                     gc.fillRect(left+1, yPixel(y)+1, dx, dy);
-                    gc.setFill(Color.GHOSTWHITE);
+                    if (controller.colorButton.isSelected()) {
+                        gc.setFill(Color.color(248, 248, 248));
+                    } else {
+                        gc.setFill(Color.GHOSTWHITE);
+                    }
                 }
             }
         }
