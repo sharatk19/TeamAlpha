@@ -2,7 +2,6 @@ package views;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -13,19 +12,17 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class SceneController {
-
-    SceneController controller;
 
     private Stage stage;
     private Scene scene;
     private Parent root;
 
+    public static Boolean colorbool = true;
     @FXML
-    public ToggleButton colorButton;
+    public static ToggleButton colorButton;
 
     @FXML
     public ToggleButton musicButton;
@@ -48,9 +45,6 @@ public class SceneController {
     @FXML
     private AnchorPane menuBackground;
 
-    public void initialize(){
-        this.controller = this;
-    }
     public void switchToMainMenu(ActionEvent event) throws IOException {
         URL url = getClass().getResource("MainMenu.fxml");
         root = FXMLLoader.load(url);
@@ -91,7 +85,7 @@ public class SceneController {
         if (event.getSource() == colorButton){
             if (colorButton.isSelected()) {
                 colortext.setText("Color Blind Mode: On");
-//                colorBlindMode();
+                colorbool = true;
             } else {
                 colortext.setText("Color Blind Mode: Off");
             }
@@ -111,8 +105,4 @@ public class SceneController {
             }
         }
     }
-//
-//    private void colorBlindMode() throws IOException {
-//        optionsBackground.getStylesheets().add()
-//    }
 }

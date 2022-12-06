@@ -1,4 +1,3 @@
-
 package views;
 
 import BattleShip.BattleShipModel;
@@ -9,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.canvas.Canvas;
@@ -21,6 +21,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import javafx.fxml.FXMLLoader;
 
 import java.util.ArrayList;
 
@@ -28,7 +29,7 @@ public class BattleShipView {
     BattleShipModel model; //reference to model
     Stage stage;
 
-    SceneController controller;
+    Boolean colorBlindMode;
     Button startButton, stopButton, loadButton, saveButton, newButton, resetbutton; //buttons for functions
     Label scoreLabel = new Label("");
     Label gameModeLabel = new Label("");
@@ -56,8 +57,8 @@ public class BattleShipView {
      */
 
     public BattleShipView(BattleShipModel model, Stage stage) {
-        this.controller = new SceneController();
         this.model = model;
+        colorBlindMode = SceneController.colorbool;
         this.stage = stage;
         temp = new ArrayList<>();
         initUI();
@@ -74,8 +75,8 @@ public class BattleShipView {
 //        -fx-background-color: #81c483;
 //        colorblind -fx-background-color: #A8A8A8;
         borderPane = new BorderPane();
-
-        if (controller.colorButton.isSelected()) {
+//
+        if (colorBlindMode) {
             borderPane.setStyle("-fx-background-color: linear-gradient(to top, #A0A0A0, #6B6B6B)");
         } else {
             borderPane.setStyle("-fx-background-color: linear-gradient(to top, #ff7f50, #6a5acd)");
@@ -133,7 +134,7 @@ public class BattleShipView {
         startButton.setId("Start");
         startButton.setPrefSize(150, 50);
         startButton.setFont(new Font(12));
-        if (controller.colorButton.isSelected()) {
+        if (colorBlindMode) {
             startButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
         } else {
             startButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
@@ -143,7 +144,7 @@ public class BattleShipView {
         stopButton.setId("Start");
         stopButton.setPrefSize(150, 50);
         stopButton.setFont(new Font(12));
-        if (controller.colorButton.isSelected()) {
+        if (colorBlindMode) {
             stopButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
         } else {
             stopButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
@@ -153,7 +154,7 @@ public class BattleShipView {
         saveButton.setId("Save");
         saveButton.setPrefSize(150, 50);
         saveButton.setFont(new Font(12));
-        if (controller.colorButton.isSelected()) {
+        if (colorBlindMode) {
             saveButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
         } else {
             saveButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
@@ -163,7 +164,7 @@ public class BattleShipView {
         loadButton.setId("Load");
         loadButton.setPrefSize(150, 50);
         loadButton.setFont(new Font(12));
-        if (controller.colorButton.isSelected()) {
+        if (colorBlindMode) {
             loadButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
         } else {
             loadButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
@@ -173,7 +174,7 @@ public class BattleShipView {
         newButton.setId("New");
         newButton.setPrefSize(150, 50);
         newButton.setFont(new Font(12));
-        if (controller.colorButton.isSelected()) {
+        if (colorBlindMode) {
             newButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
         } else {
             newButton.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
@@ -382,7 +383,7 @@ public class BattleShipView {
                     public void handle(ActionEvent actionEvent) {
                         System.out.println("Placed ShipSquare on Row:" + GridPane.getRowIndex(button));
                         System.out.println("Placed ShipSquare on Column:" + GridPane.getColumnIndex(button));
-                        if (controller.colorButton.isSelected()) {
+                        if (colorBlindMode) {
                             button.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
                         } else {
                             button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
@@ -419,7 +420,7 @@ public class BattleShipView {
                     public void handle(ActionEvent actionEvent) {
                         System.out.println("Attacked Enemy on ShipSquare on Row:" + GridPane.getRowIndex(button));
                         System.out.println("Attacked Enemy on on Column:" + GridPane.getColumnIndex(button));
-                        if (controller.colorButton.isSelected()) {
+                        if (colorBlindMode) {
                             button.setStyle("-fx-background-color: #595959; -fx-text-fill: #7F7F7F;");
                         } else {
                             button.setStyle("-fx-background-color: #17871b; -fx-text-fill: grey;");
@@ -442,12 +443,12 @@ public class BattleShipView {
     public void paintBoard() {
 
         // Draw a rectangle around the whole screen
-        if (controller.colorButton.isSelected()) {
+        if (colorBlindMode) {
             gc.setStroke(Color.color(150, 150, 150));
         } else {
             gc.setStroke(Color.GREEN);
         }
-        if (controller.colorButton.isSelected()) {
+        if (colorBlindMode) {
             gc.setFill(Color.color(248, 248, 248));
         } else {
             gc.setFill(Color.GHOSTWHITE);
@@ -472,13 +473,13 @@ public class BattleShipView {
             final int yHeight = 10;
             for (y=0; y<yHeight; y++) {
                 if (this.model.get_player_Board().getGrid(x, y)) {
-                    if (controller.colorButton.isSelected()) {
+                    if (colorBlindMode) {
                         gc.setFill(Color.color(76, 76, 76));
                     } else {
                         gc.setFill(Color.RED);
                     }
                     gc.fillRect(left+1, yPixel(y)+1, dx, dy);
-                    if (controller.colorButton.isSelected()) {
+                    if (colorBlindMode) {
                         gc.setFill(Color.color(248, 248, 248));
                     } else {
                         gc.setFill(Color.GHOSTWHITE);
