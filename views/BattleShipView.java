@@ -364,7 +364,7 @@ public class BattleShipView {
         if (this.paused != true) {
 
 //            paintBoard();
-            this.model.modelTick(BattleShipModel.MoveType.ROTATE,  0, 0, BattleShipModel.PlayerType.HUMAN);
+            this.model.modelTick(0, 0, BattleShipModel.PlayerType.HUMAN);
 //            updateScore();
         }
     }

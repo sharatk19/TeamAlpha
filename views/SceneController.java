@@ -1,5 +1,6 @@
 package views;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -15,6 +16,8 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -29,7 +32,9 @@ public class SceneController {
 
     public static Boolean colorbool = false;
 
-    public static Boolean musicbool = true;
+    public static Boolean musicbool = false;
+
+    MediaPlayer player;
 
     @FXML
     public ToggleButton colorButton;
@@ -73,7 +78,16 @@ public class SceneController {
     }
 
     public void switchToOptions(ActionEvent event) throws IOException {
-        if (colorbool){
+        if (colorbool & musicbool){
+            URL url = getClass().getResource("OptionsMusicBW.fxml");
+            root = FXMLLoader.load(url);
+
+            Node source = (Node)event.getSource();
+            stage = (Stage)source.getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } else if (colorbool) {
             URL url = getClass().getResource("OptionsBW.fxml");
             root = FXMLLoader.load(url);
 
@@ -82,7 +96,16 @@ public class SceneController {
             scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
-        } else {
+        } else if (musicbool){
+            URL url = getClass().getResource("OptionsMusic.fxml");
+            root = FXMLLoader.load(url);
+
+            Node source = (Node)event.getSource();
+            stage = (Stage)source.getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } else{
             URL url = getClass().getResource("Options.fxml");
             root = FXMLLoader.load(url);
 
@@ -129,10 +152,24 @@ public class SceneController {
             if (musicButton.isSelected()) {
                 musictext.setText("Music: On");
                 musicbool = true;
+                playBackgroundMusic();
             } else {
                 musictext.setText("Music: Off");
                 musicbool = false;
+                stopBackgroundMusic();
             }
         }
+    }
+
+    private void playBackgroundMusic(){
+        File musicfile = new File("music");
+        File song = musicfile.listFiles()[0];
+        Media media = new Media(song.toURI().toString());
+        player = new MediaPlayer(media);
+        player.play();
+    }
+
+    private void stopBackgroundMusic(){
+        player.stop();
     }
 }
