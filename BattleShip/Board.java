@@ -8,6 +8,7 @@ public class Board {
     private int height;
     private BoardSquare[][] board;
     protected boolean[][] viewGrid; //board grid
+
     private ArrayList<Ship> liveShips;
     private ArrayList<Ship> deadShips;
     boolean committed;
@@ -64,6 +65,14 @@ public class Board {
      */
     public int getHeight() {
         return height;
+    }
+
+    public ArrayList<Ship> getLiveShips() {
+        return liveShips;
+    }
+
+    public ArrayList<Ship> getDeadShips() {
+        return deadShips;
     }
 
     public int testShot(int x, int y) {
