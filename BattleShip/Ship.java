@@ -79,6 +79,7 @@ public class Ship {
 
     public boolean hit() {
         this.health -= 1;
+        System.out.println("health: " + health);
         return this.health == 0;
     }
 
@@ -124,14 +125,13 @@ public class Ship {
      * @return a list of all the rotations for all the given pieces.
      */
     public static Ship[] getShips() {
-        if (Ship.pieces==null) {
-            ArrayList<Ship> ships = new ArrayList<>();
+        ArrayList<Ship> ships = new ArrayList<>();
 
-            for (String key: Ship.DEFAULTS.keySet()){
-                ships.add(new Ship(key, Ship.DEFAULTS.get(key)));
-            }
-            Ship.pieces = ships.toArray(new Ship[0]);
+        for (String key: Ship.DEFAULTS.keySet()){
+            ships.add(new Ship(key, Ship.DEFAULTS.get(key)));
         }
+        Ship.pieces = ships.toArray(new Ship[0]);
+
         return Ship.pieces;
     }
 
