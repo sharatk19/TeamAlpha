@@ -1,5 +1,3 @@
-package views;
-
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
@@ -11,7 +9,7 @@ public class BattleShipApp extends Application {
     @Override
     public void start(Stage stage) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("MainMenu.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("views/MainMenu.fxml"));
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.show();
