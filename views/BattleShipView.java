@@ -56,6 +56,8 @@ public class BattleShipView {
     ArrayList<ShipSquare> current_player_Ship;
     Boolean paused;
     Timeline timeline;
+    GridPane player_board;
+    GridPane ai_board;
 
     int pieceWidth = 20; //width of block on display
     private double width; //height and width of canvas
@@ -98,7 +100,7 @@ public class BattleShipView {
      */
     private void initUI() {
 
-        this.paused = false;
+        this.paused = true;
         this.stage.setTitle("BATTLESHIP");
         this.width = this.model.getWidth()*pieceWidth + 2;
         this.height = this.model.getHeight()*pieceWidth + 2;
@@ -288,6 +290,7 @@ public class BattleShipView {
         //configure this such that you restart the game when the user hits the startButton
         //Make sure to return the focus to the borderPane once you're done!
         startButton.setOnAction(e -> {
+            this.paused = false;
             if(ships_sizes.isEmpty()){
                 createAIBoard();
                 System.out.println("The Game has Begun");
@@ -361,7 +364,7 @@ public class BattleShipView {
     private void updateBoard() {
         if (this.paused != true) {
 
-//            paintBoard();
+            paintBoard();
             this.model.modelTick(0, 0, BattleShipModel.PlayerType.HUMAN);
 //            updateScore();
         }
@@ -396,7 +399,7 @@ public class BattleShipView {
      * Draw the board
      */
     public void createBoard(){
-        GridPane player_board = new GridPane();
+        player_board = new GridPane();
         for(int i = 0; i < 10; i++){
             player_board.getColumnConstraints().add(new ColumnConstraints(30));
             player_board.getRowConstraints().add(new RowConstraints(30));
@@ -530,10 +533,10 @@ public class BattleShipView {
     }
 
     public void createAIBoard(){
-        GridPane player_board = new GridPane();
+        ai_board = new GridPane();
         for(int i = 0; i < 10; i++){
-            player_board.getColumnConstraints().add(new ColumnConstraints(30));
-            player_board.getRowConstraints().add(new RowConstraints(30));
+            ai_board.getColumnConstraints().add(new ColumnConstraints(30));
+            ai_board.getRowConstraints().add(new RowConstraints(30));
         }
         ArrayList<Button> temp2 = new ArrayList<>();
 
@@ -545,7 +548,7 @@ public class BattleShipView {
                 button.setPrefHeight(30);
                 button.setPrefWidth(30);
                 GridPane.setConstraints(button, y, x);
-                player_board.getChildren().add(button);
+                ai_board.getChildren().add(button);
                 temp2.add(button);
                 button.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
@@ -563,7 +566,7 @@ public class BattleShipView {
             temp.add(temp2);
             temp2 = new ArrayList<>();
         }
-        borderPane.getChildren().add(player_board);
+        borderPane.getChildren().add(ai_board);
 
 
     }
@@ -572,9 +575,37 @@ public class BattleShipView {
     }
 
 
-//
-//
-//    public void paintBoard() {
+
+
+    public void paintBoard() {
+        boolean[][] playerGrid = model.get_player_Board().getViewGrid();
+        BoardSquare[][] pBoard = model.get_player_Board().getBoard();
+        BoardSquare[][] aBoard = model.get_ai_Board().getBoard();
+
+        for (int x = 0; x < 10; x++) {
+            for (int y = 0; y < 10; y++) {
+                Button pButton = (Button) player_board.getChildren().get(10 * x + y);
+                Button aButton = (Button) ai_board.getChildren().get(10 * x + y);
+                if (model.getGamePhase() == 0) {
+                    if (playerGrid[x][y]) {
+                        pButton.setStyle("-fx-background-color: red; -fx-text-fill: grey;");
+                    } else {
+                        pButton.setStyle(null);
+                    }
+                } else if (model.getGamePhase() == 1) {
+                    if (pBoard[x][y].hasShip()) {
+                        pButton.setStyle("-fx-background-color: red; -fx-text-fill: grey;");
+                    }
+
+                    if (aBoard[x][y].getState() == 1) {
+                        aButton.setStyle("-fx-background-color: grey; -fx-text-fill: grey;");
+                    }
+                }
+
+            }
+
+        }
+    }
 //
 //        // Draw a rectangle around the whole screen
 //        if (colorBlindMode) {
