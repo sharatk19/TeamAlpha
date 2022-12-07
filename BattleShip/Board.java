@@ -105,7 +105,7 @@ public class Board {
     /**
      * Attempts to add the body of a piece to the board. Copies the piece blocks into the board grid.
      * Returns ADD_OK for a regular placement, or ADD_ROW_FILLED
-     * for a regular placement that causes at least one row to be filled. 
+     * for a regular placement that causes at least one row to be filled.
      *
      * Error cases:
      * A placement may fail in two ways. First, if part of the piece may fall out
