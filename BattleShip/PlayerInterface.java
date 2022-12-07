@@ -18,10 +18,10 @@ public class PlayerInterface {
         this.player_board = player_board;
     }
 
-    public void makeMove(Ship[] ships, int x, int y){
+    public void makeMove(int x, int y){
         // Takes in Enemy Ships, and checks if Any Squares Hit
 
-
+        this.player_board.testShot(x, y);
 
         // Make a move
 
@@ -31,14 +31,14 @@ public class PlayerInterface {
         // or
 
 
-        for(Ship ship: ships){
-            for(ShipSquare square: ship.getBody()){
-                if(square.x == x && square.y == y){
-                    this.player_board.testShot(x, y);
-                    // Update the board at that square to True
-                }
-            }
-        }
+//        for(Ship ship: ships){
+//            for(ShipSquare square: ship.getBody()){
+//                if(square.x == x && square.y == y){
+//                    this.player_board.testShot(x, y);
+//                    // Update the board at that square to True
+//                }
+//            }
+//        }
 
         return;
     }

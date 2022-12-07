@@ -1,10 +1,7 @@
 package views;
 
-import BattleShip.BattleShipModel;
+import BattleShip.*;
 
-import BattleShip.Board;
-import BattleShip.Ship;
-import BattleShip.ShipSquare;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -40,6 +37,10 @@ public class BattleShipView {
 //    PlayerInterface Player;
     Map<String, Integer> ship_definitions;
 
+    PlayerInterface new_playerInterface;
+    PlayerShipCommand set_ships_players;
+
+    PlayerMoveCommand player_move;
     Boolean colorBlindMode;
     Button startButton, newButton, resetbutton, nextbutton; //buttons for functions
     Label scoreLabel = new Label("");
@@ -77,6 +78,11 @@ public class BattleShipView {
         colorBlindMode = SceneController.colorbool;
         this.stage = stage;
         temp = new ArrayList<>();
+
+        this.new_playerInterface = new PlayerInterface(this.model.get_player_Board());
+//        this.player_move = new PlayerMoveCommand(this.new_playerInterface, new Move(new int[], new boolean), );
+
+
         initUI();
         this.ships_sizes = new Stack<>();
         this.ships_sizes.add("CARRIER");
@@ -257,6 +263,12 @@ public class BattleShipView {
 
             // This means we have placed Enough Squares for right ship
             if(current_size == squares_placed){
+
+                // Set Player Command to Place Player Ships before moving onto next ship
+                this.set_ships_players = new PlayerShipCommand(this.new_playerInterface, current_player_Ship);
+                this.set_ships_players.execute();
+
+                this.model.placeShip();
                 current_size= this.setSquares();
                 squares_placed = 0;
                 current_player_Ship = new ArrayList<>();
@@ -275,6 +287,10 @@ public class BattleShipView {
 
         resetbutton.setOnAction(e -> {
             //TO DO!
+            if(this.game_started){
+                return;
+            }
+
             this.createBoard();
             this.squares_placed = 0;
             this.current_player_Ship = new ArrayList<>();
@@ -292,6 +308,7 @@ public class BattleShipView {
         startButton.setOnAction(e -> {
             if(ships_sizes.isEmpty()){
                 createAIBoard();
+                this.game_started = true;
                 System.out.println("The Game has Begun");
             }
             else{
@@ -552,6 +569,19 @@ public class BattleShipView {
                 button.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent actionEvent) {
+                        int[] coord = {GridPane.getRowIndex(button), GridPane.getColumnIndex(button)};
+                        Integer hit = model.get_ai_Board().testShot(GridPane.getRowIndex(button), GridPane.getColumnIndex(button));
+                        Boolean condition = false;
+                        if(hit == 1){
+                            condition = true;
+                            button.setDisable(true);
+                        }
+                        Move move = new Move(coord, condition);
+
+
+                        PlayerMoveCommand playerMoveCommand = new PlayerMoveCommand(new_playerInterface, move,GridPane.getRowIndex(button), GridPane.getColumnIndex(button));
+                        playerMoveCommand.execute();
+
                         System.out.println("Attacked Enemy on ShipSquare on Row:" + GridPane.getRowIndex(button));
                         System.out.println("Attacked Enemy on on Column:" + GridPane.getColumnIndex(button));
                         if (colorBlindMode) {
