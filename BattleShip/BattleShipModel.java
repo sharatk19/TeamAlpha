@@ -190,6 +190,13 @@ public class BattleShipModel {
         setCurrent(piece, px, py);
     }
 
+    public void rotateCurrent() {
+        if (currentShip != null) {
+            currentShip.rotate();
+            System.out.println(currentShip);
+        }
+    }
+
 
     /**
      * Attempt to set the piece at a given board position

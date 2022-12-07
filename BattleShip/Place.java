@@ -10,9 +10,9 @@ public class Place implements Strategy{
         Ship ship = Ship.getShips()[board.getLiveShips().size()];
         System.out.println(ship.getName());
 
-//        if (random.nextBoolean()) {
-//            ship.rotate();
-//        }
+        if (random.nextBoolean()) {
+            ship.rotate();
+        }
 
         boolean canPlace = false;
 

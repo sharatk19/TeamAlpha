@@ -10,48 +10,20 @@ import java.util.ArrayList;
 public class PlayerInterface {
 
     public ArrayList<Move> moves;
-    public Board player_board;
+    public BattleShipModel model;
 
 
-    public PlayerInterface(Board player_board){
-        this.moves = new ArrayList<>();
-        this.player_board = player_board;
+    public PlayerInterface(BattleShipModel m){
+        this.model = m;
     }
 
     public void makeMove(int x, int y){
         // Takes in Enemy Ships, and checks if Any Squares Hit
 
-        this.player_board.testShot(x, y);
-
-        // Make a move
-
-        // Given and x and y, hit that position so that
-        // this.playerboard.testplayershot()
-
-        // or
-
-
-//        for(Ship ship: ships){
-//            for(ShipSquare square: ship.getBody()){
-//                if(square.x == x && square.y == y){
-//                    this.player_board.testShot(x, y);
-//                    // Update the board at that square to True
-//                }
-//            }
-//        }
-
-        return;
+        this.model.executeShot(x, y);
     }
 
-    public void addMove(Move move){
-        this.moves.add(move);
-    }
-    public void setPlayerShips(ArrayList<ShipSquare> shipsquares, String name){
-        Ship ship = new Ship(name, shipsquares.size());
-        ship.changeBody(shipsquares);
-
-        for(ShipSquare squares: ship.getBody()){
-            this.player_board.placeSquare(squares);
-        }
+    public void setPlayerShips(){
+        this.model.placeShip();
     }
 }

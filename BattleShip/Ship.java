@@ -146,16 +146,16 @@ public class Ship {
     public void rotate() {
         if (horizontal) {
             for (ShipSquare shipSquare : this.body) {
-                shipSquare.y = shipSquare.x;
-                shipSquare.x = 0;
+                shipSquare.x = shipSquare.y;
+                shipSquare.y = 0;
             }
 
             height = this.body.length;
             width = 1;
         } else {
             for (ShipSquare shipSquare : this.body) {
-                shipSquare.x = shipSquare.y;
-                shipSquare.y = 0;
+                shipSquare.y = shipSquare.x;
+                shipSquare.x = 0;
             }
             width = this.body.length;
             height = 1;
@@ -200,12 +200,6 @@ public class Ship {
             return 2;
         } else {
             return 0;
-        }
-    }
-
-    public void changeBody(ArrayList<ShipSquare> squares){
-        for (int i = 0; i < this.body.length; i++) {
-            body[i] = squares.get(i);
         }
     }
 

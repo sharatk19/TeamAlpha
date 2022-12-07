@@ -151,30 +151,6 @@ public class Board {
         return ADD_OK;
     }
 
-    public int placeSquare(ShipSquare square) {
-        committed = false;
-
-        if(getGrid(square.x, square.y)){
-            return ADD_OUT_BOUNDS;
-        }
-        else{
-            viewGrid[square.x][square.y] = true;
-            return ADD_OK;
-        }
-//        ShipSquare[] body = ship.getBody();
-//
-//        if (getGrid(body[0].x + x, body[0].y + y) ||
-//                getGrid(body[body.length - 1].x + x, body[body.length - 1].y + y)) {
-//            return ADD_OUT_BOUNDS;
-//        }
-//
-//        for (ShipSquare square: ship.getBody()) {
-//            viewGrid[square.x + x][square.y + y] = true;
-//        }
-//
-//        return ADD_OK;
-    }
-
     /**
      * Reverts the board to its state before up to one call to placePiece() and one to clearRows();
      * If the conditions for undo() are not met, such as calling undo() twice in a row, then the second undo() does nothing.

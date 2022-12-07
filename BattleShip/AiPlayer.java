@@ -41,7 +41,9 @@ public class AiPlayer implements Serializable{
         }
         else if (hit && search) {
             search = false;
-            moves = (ArrayList<Move>) Collections.singletonList(moves.get(moves.size() - 1));
+            Move move = moves.get(moves.size() - 1);
+            moves = new ArrayList<>();
+            moves.add(move);
         }
     }
 }
