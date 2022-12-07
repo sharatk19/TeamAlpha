@@ -8,7 +8,6 @@ public class Place implements Strategy{
     public int[] executeMove(Board board, ArrayList<Move> moves) {
         Random random = new Random();
         Ship ship = Ship.getShips()[board.getLiveShips().size()];
-        System.out.println(ship.getName());
 
         if (random.nextBoolean()) {
             ship.rotate();

@@ -137,20 +137,6 @@ public class BattleShipView {
         player_ship_count.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
         player_ship_count.setStyle("-fx-text-fill: white;");
 
-        currentship.setId("CRUISER");
-        currentship.setText("CRUISER");
-        currentship.setMinWidth(250);
-        currentship.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
-        currentship.setStyle("-fx-text-fill: white;");
-
-        System.out.println("Place CRUISER: 2 Squares");
-        final ToggleGroup toggleGroup = new ToggleGroup();
-
-
-        scoreLabel.setText("Ships Destroyed: 0");
-        scoreLabel.setFont(new Font(20));
-        scoreLabel.setStyle("-fx-text-fill: #e8e6e3");
-
         //add buttons
 //        startButton = new Button("Start");
 //        startButton.setId("Start");

@@ -29,4 +29,12 @@ public class Move {
         if (!(obj instanceof Move move)) return false;
         return(Arrays.equals(coord, move.getCoord()));
     }
+
+    @Override
+    public String toString() {
+        return "Move{" +
+                "coord=" + Arrays.toString(coord) +
+                ", hit=" + hit +
+                '}';
+    }
 }

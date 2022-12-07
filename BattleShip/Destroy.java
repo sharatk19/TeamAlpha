@@ -13,7 +13,7 @@ public class Destroy implements Strategy{
     public int[] executeMove(Board board, ArrayList<Move> moves) {
         Random random = new Random();
 
-        int[] origin = moves.get(moves.size() - 1).getCoord();
+        int[] origin = moves.get(0).getCoord();
         Ship[] liveShips = board.getLiveShips().toArray(new Ship[0]);
         Ship[] deadShips = board.getDeadShips().toArray(new Ship[0]);
         Integer[] liveSizes = new Integer[liveShips.length];
@@ -40,11 +40,12 @@ public class Destroy implements Strategy{
                 }
             }
         }
-
+        System.out.println(moves);
+        System.out.println(Arrays.deepToString(defaults));
         for (int[] aDefault : defaults) {
             int[] curr = new int[]{origin[0] + aDefault[0], origin[1] + aDefault[1]};
 
-            if (board.getBoard()[curr[0]][curr[1]].getState() != 1) {
+            if (!board.getGrid(curr[0], curr[1]) && board.getBoard()[curr[0]][curr[1]].getState() != 1) {
                 while (true) {
                     testShip.x = curr[0];
                     testShip.y = curr[1];

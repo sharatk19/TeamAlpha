@@ -101,14 +101,11 @@ public class BattleShipModel {
      */
     public void ai_playerShip_Setup(){
         for (Ship ship: Ship.getShips()) {
-            System.out.println(ship.getName());
             int[] coords = comp.executeStrategy(ai_board, gamePhase);
-            System.out.println(Arrays.toString(coords));
+
             ai_board.placePiece(ship, coords[0], coords[1]);
             ai_board.commit(ship);
         }
-
-        System.out.println(Arrays.deepToString(ai_board.getViewGrid()).replace("], ", "]\n").replace("[[", "[").replace("]]", "]"));
     }
 
 
@@ -193,7 +190,6 @@ public class BattleShipModel {
     public void rotateCurrent() {
         if (currentShip != null) {
             currentShip.rotate();
-            System.out.println(currentShip);
         }
     }
 
