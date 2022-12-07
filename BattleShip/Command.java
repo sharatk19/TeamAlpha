@@ -1,4 +1,4 @@
-package BattleShip.Player;
+package BattleShip;
 
 public interface Command {
 

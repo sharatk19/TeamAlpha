@@ -1,4 +1,4 @@
-package BattleShip.Player;
+package BattleShip;
 
 import BattleShip.Board;
 import BattleShip.Move;
@@ -18,12 +18,23 @@ public class PlayerInterface {
         this.player_board = player_board;
     }
 
-    public void makeMove(int x, int y){
+    public void makeMove(Ship[] ships, int x, int y){
 
         // Make a move
 
         // Given and x and y, hit that position so that
         // this.playerboard.testplayershot()
+
+        // or
+
+
+        for(Ship ship: ships){
+            for(ShipSquare square: ship.getBody()){
+                if(square.x == x && square.y == y){
+                    // Update the board at that square to True
+                }
+            }
+        }
 
         return;
     }
@@ -31,11 +42,11 @@ public class PlayerInterface {
     public void addMove(Move move){
         this.moves.add(move);
     }
-    public void setPlayerShips(ArrayList<Ship> ships){
-        for(Ship ship: ships){
-            for(ShipSquare square: ship.getBody()){
-                // call place piece on board but change call to ShipSquare instead of Ship
-            }
-        }
+    public void setPlayerShips(Ship ship){
+//        for(Ship ship: ships){
+//            for(ShipSquare square: ship.getBody()){
+//                // call place piece on board but change call to ShipSquare instead of Ship
+//            }
+//        }
     }
 }
