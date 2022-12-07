@@ -2,8 +2,11 @@ package views;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ResourceBundle;
 
+import BattleShip.BattleShipModel;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -13,22 +16,26 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 public class SceneController {
+
+    BattleShipModel model;
+    BattleShipView view;
 
     private Stage stage;
     private Scene scene;
     private Parent root;
 
     public static Boolean colorbool = false;
+
+    public static Boolean musicbool = true;
+
     @FXML
-    public static ToggleButton colorButton;
+    public ToggleButton colorButton;
 
     @FXML
     public ToggleButton musicButton;
-
-    @FXML
-    public ToggleButton audioButton;
 
     @FXML
     private Label colortext;
@@ -37,72 +44,94 @@ public class SceneController {
     private Label musictext;
 
     @FXML
-    private Label audiotext;
-
-    @FXML
     private AnchorPane optionsBackground;
 
     @FXML
     private AnchorPane menuBackground;
 
     public void switchToMainMenu(ActionEvent event) throws IOException {
-        URL url = getClass().getResource("MainMenu.fxml");
-        root = FXMLLoader.load(url);
+        if (colorbool){
+            URL url = getClass().getResource("MainMenuBW.fxml");
+            root = FXMLLoader.load(url);
 
-        Node source = (Node)event.getSource();
-        stage = (Stage)source.getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+            Node source = (Node)event.getSource();
+            stage = (Stage)source.getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } else {
+            URL url = getClass().getResource("MainMenu.fxml");
+            root = FXMLLoader.load(url);
+
+            Node source = (Node)event.getSource();
+            stage = (Stage)source.getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        }
+
     }
 
     public void switchToOptions(ActionEvent event) throws IOException {
-        URL url = getClass().getResource("Options.fxml");
-        root = FXMLLoader.load(url);
+        if (colorbool){
+            URL url = getClass().getResource("OptionsBW.fxml");
+            root = FXMLLoader.load(url);
 
-        Node source = (Node)event.getSource();
-        stage = (Stage)source.getScene().getWindow();
-        scene = new Scene(root);
-        stage.setScene(scene);
-        stage.show();
+            Node source = (Node)event.getSource();
+            stage = (Stage)source.getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        } else {
+            URL url = getClass().getResource("Options.fxml");
+            root = FXMLLoader.load(url);
+
+            Node source = (Node)event.getSource();
+            stage = (Stage)source.getScene().getWindow();
+            scene = new Scene(root);
+            stage.setScene(scene);
+            stage.show();
+        }
     }
 
     public void logout(ActionEvent event) throws IOException {
-
         Node source = (Node)event.getSource();
         stage = (Stage)source.getScene().getWindow();
         stage.close();
     }
 
     // tie this to actually starting the game
-//    public void start(ActionEvent event) throws IOException {
-//
-//        Node source = (Node)event.getSource();
-//        stage = (Stage)source.getScene().getWindow();
-//    }
+    public void start(ActionEvent event) throws IOException {
+
+        Node source = (Node)event.getSource();
+        stage = (Stage)source.getScene().getWindow();
+
+        this.model = new BattleShipModel(); // create a model
+        this.view = new BattleShipView(model, stage);
+        this.model.startGame();
+    }
 
     public void toggleButton(ActionEvent event) throws IOException {
         if (event.getSource() == colorButton){
             if (colorButton.isSelected()) {
                 colortext.setText("Color Blind Mode: On");
                 colorbool = true;
+                optionsBackground.getStylesheets().clear();
+                optionsBackground.getStylesheets().add("CssStyle/BackgroundBlackAndWhite.css");
             } else {
                 colortext.setText("Color Blind Mode: Off");
                 colorbool = false;
+                optionsBackground.getStylesheets().clear();
+                optionsBackground.getStylesheets().add("CssStyle/BackgroundPicture.css");
             }
         }
         if (event.getSource() == musicButton){
             if (musicButton.isSelected()) {
                 musictext.setText("Music: On");
+                musicbool = true;
             } else {
                 musictext.setText("Music: Off");
-            }
-        }
-        if (event.getSource() == audioButton){
-            if (audioButton.isSelected()) {
-                audiotext.setText("Audio: On");
-            } else {
-                audiotext.setText("Audio: Off");
+                musicbool = false;
             }
         }
     }
