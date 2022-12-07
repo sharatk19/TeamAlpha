@@ -2,6 +2,9 @@ package views;
 
 import BattleShip.BattleShipModel;
 
+import BattleShip.Board;
+import BattleShip.Ship;
+import BattleShip.ShipSquare;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -24,15 +27,25 @@ import javafx.util.Duration;
 import javafx.fxml.FXMLLoader;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Stack;
 
 public class BattleShipView {
     BattleShipModel model; //reference to model
     Stage stage;
+    Boolean game_started;
+    Integer squares_placed;
+    Stack<String> ships_sizes;
+//    PlayerInterface Player;
+    Map<String, Integer> ship_definitions;
 
     Boolean colorBlindMode;
-    Button startButton, stopButton, loadButton, saveButton, newButton, resetbutton; //buttons for functions
+    Button startButton, stopButton, loadButton, saveButton, newButton, resetbutton, nextbutton; //buttons for functions
     Label scoreLabel = new Label("");
     Label gameModeLabel = new Label("");
+
+    Label currentship = new Label("");
 
     Label ai_ship_count_label = new Label("");
 
@@ -42,6 +55,8 @@ public class BattleShipView {
     Canvas canvas;
     GraphicsContext gc; //the graphics context will be linked to the canvas
 
+    int current_size;
+    ArrayList<ShipSquare> current_player_Ship;
     Boolean paused;
     Timeline timeline;
 
@@ -57,17 +72,35 @@ public class BattleShipView {
      */
 
     public BattleShipView(BattleShipModel model, Stage stage) {
+        this.game_started = false;
         this.model = model;
         colorBlindMode = SceneController.colorbool;
         this.stage = stage;
         temp = new ArrayList<>();
         initUI();
+        this.ships_sizes = new Stack<>();
+        this.ships_sizes.add("CARRIER");
+        this.ships_sizes.add("BATTLESHIP");
+        this.ships_sizes.add("SUBMARINE");
+        this.ships_sizes.add("DESTROYER");
+        this.ships_sizes.add("CRUISER");
+        this.ship_definitions = new HashMap<>();
+        this.ship_definitions.put("CARRIER", 5);
+        this.ship_definitions.put("BATTLESHIP", 4);
+        this.ship_definitions .put("SUBMARINE", 3);
+        this.ship_definitions .put("DESTROYER", 3);
+        this.ship_definitions .put("CRUISER", 2);
+        this.squares_placed = 0;
+        this.current_player_Ship = new ArrayList<>();
+
+        this.current_size = this.ship_definitions.get(this.ships_sizes.pop());
     }
 
     /**
      * Initialize interface
      */
     private void initUI() {
+
         this.paused = false;
         this.stage.setTitle("BATTLESHIP");
         this.width = this.model.getWidth()*pieceWidth + 2;
@@ -111,20 +144,14 @@ public class BattleShipView {
         player_ship_count.setFont(Font.font("Verdana", FontWeight.BOLD, 40));
         player_ship_count.setStyle("-fx-text-fill: white;");
 
+        currentship.setId("CRUISER");
+        currentship.setText("CRUISER");
+        currentship.setMinWidth(250);
+        currentship.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
+        currentship.setStyle("-fx-text-fill: white;");
         final ToggleGroup toggleGroup = new ToggleGroup();
 
-//        RadioButton pilotButtonHuman = new RadioButton("Human");
-//        pilotButtonHuman.setToggleGroup(toggleGroup);
-//        pilotButtonHuman.setSelected(true);
-//        pilotButtonHuman.setUserData(Color.SALMON);
-//        pilotButtonHuman.setFont(new Font(16));
-//        pilotButtonHuman.setStyle("-fx-text-fill: #e8e6e3");
-//
-//        RadioButton pilotButtonComputer = new RadioButton("Computer (Default)");
-//        pilotButtonComputer.setToggleGroup(toggleGroup);
-//        pilotButtonComputer.setUserData(Color.SALMON);
-//        pilotButtonComputer.setFont(new Font(16));
-//        pilotButtonComputer.setStyle("-fx-text-fill: #e8e6e3");
+
         scoreLabel.setText("Ships Destroyed: 0");
         scoreLabel.setFont(new Font(20));
         scoreLabel.setStyle("-fx-text-fill: #e8e6e3");
@@ -134,6 +161,12 @@ public class BattleShipView {
         startButton.setId("Start");
         startButton.setPrefSize(150, 50);
         startButton.setFont(new Font(12));
+
+        nextbutton = new Button("NextShip");
+        nextbutton.setId("NextShip");
+        nextbutton.setPrefSize(150, 50);
+        nextbutton.setFont(new Font(12));
+
         if (colorBlindMode) {
             startButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
         } else {
@@ -154,6 +187,7 @@ public class BattleShipView {
         saveButton.setId("Save");
         saveButton.setPrefSize(150, 50);
         saveButton.setFont(new Font(12));
+
         if (colorBlindMode) {
             saveButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
         } else {
@@ -210,6 +244,24 @@ public class BattleShipView {
         timeline.play();
 
 
+        nextbutton.setOnAction(e -> {
+            //Move on to Next Ship Setup
+
+            // This means we have placed Enough Squares for right ship
+            if(current_size == squares_placed){
+                current_size= this.setSquares();
+                squares_placed = 0;
+                if(current_size == 0){
+                    System.out.println("You Have Already Placed All Ships, Please Press Start to Start the Game");
+                }
+            }
+
+            else{
+                System.out.println("Please Fill in Remaining Squares to Finish Ship");
+            }
+            this.borderPane.requestFocus();
+        });
+
 
         resetbutton.setOnAction(e -> {
             //TO DO!
@@ -226,7 +278,14 @@ public class BattleShipView {
         //configure this such that you restart the game when the user hits the startButton
         //Make sure to return the focus to the borderPane once you're done!
         startButton.setOnAction(e -> {
-            createAIBoard();
+            if(ships_sizes.isEmpty()){
+                createAIBoard();
+                System.out.println("The Game has Begun");
+            }
+            else{
+                System.out.println("Finish Placing Ships, Then the Game Shall Begin");
+            }
+
 
             this.borderPane.requestFocus();
         });
@@ -298,27 +357,32 @@ public class BattleShipView {
         var scene = new Scene(borderPane, 1000, 720);
         this.stage.setScene(scene);
         this.stage.show();
+        // Create Player Board for Player to Place Ships
         createBoard();
-        createAIBoard();
+
     }
 
-    /**
-     * Get user selection of "autopilot" or human player
-     *
-     * @param value toggle selector on UI
-     */
-//    private void swapPilot(Toggle value) {
-//        RadioButton chk = (RadioButton)value.getToggleGroup().getSelectedToggle();
-//        String strVal = chk.getText();
-//        if (strVal.equals("Computer (Default)")){
-//            this.model.setAutoPilotMode();
-//            gameModeLabel.setText("Player is: Computer (Default)");
-//        } else if (strVal.equals("Human")) {
-//            this.model.setHumanPilotMode();
-//            gameModeLabel.setText("Player is: Human");
-//        }
-//        borderPane.requestFocus(); //give the focus back to the pane with the blocks.
-//    }
+    public int setSquares(){
+        if(ships_sizes.isEmpty()){
+            return 0;
+        }
+        String label_for_ship = ships_sizes.pop();
+        Integer ship_size_to_build = ship_definitions.get(label_for_ship);
+        currentship.setId(label_for_ship);
+        currentship.setText(label_for_ship);
+        currentship.setMinWidth(250);
+        currentship.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
+        currentship.setStyle("-fx-text-fill: white;");
+
+        // If we see the required size of squares have been placed then we Move onto Next ship
+        return ship_size_to_build;
+
+
+    }
+
+
+
+
 
     /**
      * Update board (paint pieces and score info)
@@ -378,16 +442,71 @@ public class BattleShipView {
                 GridPane.setConstraints(button, y, x);
                 player_board.getChildren().add(button);
                 temp2.add(button);
+
+                int temp_x = x;
+                int temp_y = y;
                 button.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent actionEvent) {
-                        System.out.println("Placed ShipSquare on Row:" + GridPane.getRowIndex(button));
-                        System.out.println("Placed ShipSquare on Column:" + GridPane.getColumnIndex(button));
-                        if (colorBlindMode) {
-                            button.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
-                        } else {
-                            button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+
+
+                        ShipSquare square = new ShipSquare(GridPane.getRowIndex(button), GridPane.getColumnIndex(button));
+                        if(current_player_Ship.isEmpty()){
+                            current_player_Ship.add(square);
                         }
+                        //current_player_Ship.add(square);
+                        else{
+
+
+
+                        // Go through every Square placed and check if the current x and y placed is y + 1, x + 1, x-1, y - 1
+                        // y+1 x + 1, x-1 y-1, x+1 y-1, x-1, y + 1
+
+
+                            for(ShipSquare ship_squares: current_player_Ship) {
+                                // Check if Any of the Squares are corners
+                                // Case 1
+                                if ((ship_squares.x + 1 == GridPane.getRowIndex(button) && ship_squares.y + 1 == GridPane.getColumnIndex(button))) {
+                                    System.out.println("Click on a Square that is VALID");
+                                    createBoard();
+                                }
+                                // Case 2 Top Left
+                                else if ((ship_squares.x - 1 == GridPane.getRowIndex(button) && ship_squares.y + 1 == GridPane.getColumnIndex(button))) {
+                                    System.out.println("Click on a Square that is VALID");
+                                    createBoard();
+                                }
+                                // Case 3
+                                else if ((ship_squares.x + 1 == GridPane.getRowIndex(button) && ship_squares.y - 1 == GridPane.getColumnIndex(button))) {
+                                    System.out.println("Click on a Square that is VALID");
+                                    createBoard();
+                                }
+                                // Case 4
+                                else if ((ship_squares.x - 1 == GridPane.getRowIndex(button) && ship_squares.y - 1 == GridPane.getColumnIndex(button))) {
+                                    System.out.println("Click on a Square that is VALID");
+                                    createBoard();
+                                } else {
+                                    // Call Player Interface since we found a square
+                                    current_player_Ship.add(square);
+                                    squares_placed += 1;
+
+
+
+                                }
+                            }
+
+                            }
+    //                        if(ships_sizes.isEmpty())
+//                            System.out.println("Placed ShipSquare on Row:" + GridPane.getRowIndex(button));
+//                            System.out.println("Placed ShipSquare on Column:" + GridPane.getColumnIndex(button));
+
+                            //squares_placed += 1;
+
+
+                            if (colorBlindMode) {
+                                button.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
+                            } else {
+                                button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
+                            }
                     }
                 });
             }
@@ -432,6 +551,8 @@ public class BattleShipView {
             temp2 = new ArrayList<>();
         }
         borderPane.getChildren().add(player_board);
+
+
     }
     public void timer(){
         return;
