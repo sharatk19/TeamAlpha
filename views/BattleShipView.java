@@ -1,10 +1,7 @@
 package views;
 
-import BattleShip.BattleShipModel;
+import BattleShip.*;
 
-import BattleShip.Board;
-import BattleShip.Ship;
-import BattleShip.ShipSquare;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
@@ -264,6 +261,7 @@ public class BattleShipView {
                 if(current_size == 0){
                     System.out.println("You Have Already Placed All Ships, Please Press Start to Start the Game");
                 }
+
             }
 
             else{

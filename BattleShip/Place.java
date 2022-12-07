@@ -8,10 +8,11 @@ public class Place implements Strategy{
     public int[] executeMove(Board board, ArrayList<Move> moves) {
         Random random = new Random();
         Ship ship = Ship.getShips()[board.getLiveShips().size()];
+        System.out.println(ship.getName());
 
-        if (random.nextBoolean()) {
-            ship.rotate();
-        }
+//        if (random.nextBoolean()) {
+//            ship.rotate();
+//        }
 
         boolean canPlace = false;
 
@@ -19,8 +20,8 @@ public class Place implements Strategy{
             ship.x = random.nextInt(0,10);
             ship.y = random.nextInt(0,10);
 
-            if (board.getGrid(ship.getAbsHead()[0], ship.getAbsHead()[1]) ||
-                    board.getGrid(ship.getAbsTail()[0], ship.getAbsTail()[1])) {
+            if (!board.getGrid(ship.getAbsHead()[0], ship.getAbsHead()[1]) &&
+                    !board.getGrid(ship.getAbsTail()[0], ship.getAbsTail()[1])) {
                 canPlace = true;
             }
 

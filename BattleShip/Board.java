@@ -76,6 +76,10 @@ public class Board {
     }
 
     public int testShot(int x, int y) {
+        if (this.board[x][y].getState() != 0) {
+            return 3;
+        }
+
         Ship ship = this.board[x][y].testShot();
 
         if (ship != null) {
@@ -83,11 +87,12 @@ public class Board {
             if (destroyed) {
                 liveShips.remove(ship);
                 deadShips.add(ship);
+                return 2;
             }
-        } else {
             return 1;
+        } else {
+            return 0;
         }
-        return 0;
     }
 
     public boolean[][] getViewGrid() {

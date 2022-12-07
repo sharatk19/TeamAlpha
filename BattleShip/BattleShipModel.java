@@ -11,6 +11,7 @@ public class BattleShipModel {
     public static final int WIDTH = 10; //size of the board in blocks
     public static final int HEIGHT = 10; //height of the board in blocks
 
+    private AiPlayer comp;
     protected Board player_board;  // Board data structure
     protected Board ai_board;  // Board data structure
     protected Iterator<Ship> ships; // Pieces to be places on the board
@@ -42,6 +43,7 @@ public class BattleShipModel {
      * Constructor for a tetris model
      */
     public BattleShipModel() {
+        comp = new AiPlayer();
         player_board = new Board(WIDTH, HEIGHT);
         ai_board = new Board(WIDTH, HEIGHT);
         ships = Arrays.stream(Ship.getShips()).iterator();; //initialize board and pieces
@@ -54,6 +56,7 @@ public class BattleShipModel {
      */
     public void startGame() { //start game
         // Set Up Player Ships onto Grid
+        gamePhase = 0;
         playerShip_setup();
 
         // Set up Player
@@ -97,7 +100,15 @@ public class BattleShipModel {
      * Setter For AI Player Ships
      */
     public void ai_playerShip_Setup(){
-        return;
+        for (Ship ship: Ship.getShips()) {
+            System.out.println(ship.getName());
+            int[] coords = comp.executeStrategy(ai_board, gamePhase);
+            System.out.println(Arrays.toString(coords));
+            ai_board.placePiece(ship, coords[0], coords[1]);
+            ai_board.commit(ship);
+        }
+
+        System.out.println(Arrays.deepToString(ai_board.getViewGrid()).replace("], ", "]\n").replace("[[", "[").replace("]]", "]"));
     }
 
 
@@ -257,18 +268,18 @@ public class BattleShipModel {
         }
     }
 
-    public void executeShot(int x, int y, PlayerType type) {
+    public void executeShot(int x, int y) {
         if (gamePhase != 1) {return;}
 
-        Board board = null;
+        int result = ai_board.testShot(x, y);
 
-        switch (type) {
-            case COMP -> board = player_board;
-            case HUMAN -> board = ai_board;
+        if (result != 3) {
+            int[] coords = comp.executeStrategy(player_board, gamePhase);
+
+            result = player_board.testShot(coords[0], coords[1]);
+
+            comp.update(result == 1 || result == 2, result == 2);
         }
-
-        board.testShot(x, y);
-        System.out.println(1);
     }
 
     /**
