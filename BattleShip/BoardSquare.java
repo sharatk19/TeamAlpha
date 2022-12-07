@@ -17,16 +17,21 @@ public class BoardSquare {
     }
 
     public boolean hasShip() {
-        return ship == null;
+        return ship != null;
     }
 
-    public int testShot() {
+    public int getState() {return state;}
+
+    public Ship testShot() {
+        if (this.state > 0) {
+            return null;
+        }
         if (ship == null) {
-            state = 1;
+            state = MISS;
         } else {
-            state = 2;
+            state = HIT;
         }
 
-        return state;
+        return ship;
     }
 }
