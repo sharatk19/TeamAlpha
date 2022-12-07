@@ -9,8 +9,7 @@ import java.io.ObjectOutputStream;
 public class BattleShipModel {
 
     public static final int WIDTH = 10; //size of the board in blocks
-    public static final int HEIGHT = 20; //height of the board in blocks
-    public static final int BUFFERZONE = 4; //space at the top
+    public static final int HEIGHT = 10; //height of the board in blocks
 
     protected Board player_board;  // Board data structure
     protected Board ai_board;  // Board data structure
@@ -43,8 +42,8 @@ public class BattleShipModel {
      * Constructor for a tetris model
      */
     public BattleShipModel() {
-        player_board = new Board(WIDTH, HEIGHT + BUFFERZONE);
-        ai_board = new Board(WIDTH, HEIGHT + BUFFERZONE);
+        player_board = new Board(WIDTH, HEIGHT);
+        ai_board = new Board(WIDTH, HEIGHT);
         ships = Arrays.stream(Ship.getShips()).iterator();; //initialize board and pieces
         gameOn = false;
     }
@@ -127,7 +126,7 @@ public class BattleShipModel {
      * @return height (with buffer at top accounted for)
      */
     public double getHeight() {
-        return HEIGHT + BUFFERZONE;
+        return HEIGHT;
     }
 
     /**
@@ -135,33 +134,36 @@ public class BattleShipModel {
      *
      * @param verb type of move to account for when placing shi[
      */
-    public void computeNewPosition(MoveType verb) {
-        newX = currentX;
-        newY = currentY;
-
-        // Make changes based on the verb
-        switch (verb) {
-            case LEFT -> newX--;
-            //move left
-
-            case RIGHT -> newX++;
-            //move right
-
-            case ROTATE -> //rotate
-                    currentShip.rotate();
-            case DOWN -> //down
-                    newY--;
-            default -> //doh!
-                    throw new RuntimeException("Bad movement!");
-        }
-    }
+//    public void computeNewPosition(int x, int y) {
+//        newX = currentX;
+//        newY = currentY;
+//
+//        // Make changes based on the verb
+//        switch (verb) {
+//            case LEFT -> newX = x;
+//            //move left
+//
+//            case RIGHT -> newX = y;
+//            //move right
+//
+//            case ROTATE -> //rotate
+//                    currentShip.rotate();
+//            case DOWN -> //down
+//                    newY--;
+//            default -> //doh!
+//                    throw new RuntimeException("Bad movement!");
+//        }
+//    }
 
     /**
      * Put new piece in to play in the Player Ship Board
      */
     public void addNewShip() {
         // commit things the way they are
-        player_board.commit(currentShip);
+        int result = player_board.commit(currentShip);
+
+        if (result == 1) return;
+
         currentShip = null;
 
         if(!ships.hasNext()){
@@ -174,11 +176,7 @@ public class BattleShipModel {
         int px = (player_board.getWidth() - piece.getWidth())/2;
         int py = (player_board.getHeight() - piece.getHeight())/2;
 
-        int result = setCurrent(piece, px, py);
-
-        if (result > 1) {
-            stopGame(); //oops, we lost.
-        }
+        setCurrent(piece, px, py);
     }
 
 
@@ -218,14 +216,14 @@ public class BattleShipModel {
      * Each tick is associated with a move of some kind!
      * Put the move in play by executing this.
      */
-    public void modelTick(MoveType verb, int x, int y, PlayerType type) {
+    public void modelTick(int x, int y, PlayerType type) {
 
         if (!gameOn) return;
 
-        switch (gamePhase) {
-            case 0 -> executeMove(verb);
-            case 1 -> executeShot(x, y, type);
-        }
+//        switch (gamePhase) {
+//            case 0 -> placeShip(x, y);
+//            case 1 -> executeShot(x, y, PlayerType.HUMAN);
+//        }
     }
 
     /**
@@ -242,46 +240,35 @@ public class BattleShipModel {
      * set the ship to this location if possible. Place all Players Ships.
      * @param verb the type of move to execute
      */
-    private void executeMove(MoveType verb) {
+    public void hoverMove(int x, int y) {
         // Execute that Given move
 
-
         if (currentShip != null) {
-            if (verb == MoveType.DROP) {
-                player_board.placePiece(currentShip, currentX, currentY);
-                return;
-            }
             player_board.undo();	// remove the piece from its old position
+            currentShip.x = x;
+            currentShip.y = y;
+            setCurrent(currentShip, x, y);
         }
-        computeNewPosition(verb);
-
-        // try out the new position (and roll it back if it doesn't work)
-        int result;
-        if(nextShip != null){
-             result = setCurrent(nextShip, newX, newY);
-        }
-//        int result = setCurrent(nextShip, newX, newY);
-        else{
-            return;
-        }
-
-        boolean failed = (result >= Board.ADD_OUT_BOUNDS);
-
-        // if it didn't work, put it back the way it was
-        if (failed) {
-            if (currentShip != null) {
-                currentShip.rotate();
-                player_board.placePiece(currentShip, currentX, currentY);
-            }
-        }   // Otherwise, add another ship for player board
-            else {
-                addNewShip();
-            }
-
     }
 
-    private void executeShot(int x, int y, PlayerType type) {
-        return;
+    public void placeShip() {
+        if (gamePhase == 0) {
+            addNewShip();
+        }
+    }
+
+    public void executeShot(int x, int y, PlayerType type) {
+        if (gamePhase != 1) {return;}
+
+        Board board = null;
+
+        switch (type) {
+            case COMP -> board = player_board;
+            case HUMAN -> board = ai_board;
+        }
+
+        board.testShot(x, y);
+        System.out.println(1);
     }
 
     /**
