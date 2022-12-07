@@ -14,7 +14,8 @@ public class BattleShipModel {
     private AiPlayer comp;
     protected Board player_board;  // Board data structure
     protected Board ai_board;  // Board data structure
-    protected Iterator<Ship> ships; // Pieces to be places on the board
+    protected Iterator<Ship> playerShips; // Pieces to be places on the board
+    protected Ship[] aiShips;
 
     protected Ship currentShip; //Piece we are currently placing
     protected Ship nextShip; //next piece to be placed
@@ -46,7 +47,8 @@ public class BattleShipModel {
         comp = new AiPlayer();
         player_board = new Board(WIDTH, HEIGHT);
         ai_board = new Board(WIDTH, HEIGHT);
-        ships = Arrays.stream(Ship.getShips()).iterator();; //initialize board and pieces
+        playerShips = Arrays.stream(Ship.getShips()).iterator();; //initialize board and pieces
+        aiShips = Ship.getShips();
         gameOn = false;
     }
 
@@ -100,12 +102,14 @@ public class BattleShipModel {
      * Setter For AI Player Ships
      */
     public void ai_playerShip_Setup(){
-        for (Ship ship: Ship.getShips()) {
+        for (Ship ship: aiShips) {
             int[] coords = comp.executeStrategy(ai_board, gamePhase);
 
             ai_board.placePiece(ship, coords[0], coords[1]);
             ai_board.commit(ship);
         }
+
+        System.out.println(Arrays.deepToString(ai_board.getViewGrid()).replace("], ", "]\n").replace("[[", "[").replace("]]", "]"));
     }
 
 
@@ -174,11 +178,11 @@ public class BattleShipModel {
 
         currentShip = null;
 
-        if(!ships.hasNext()){
+        if(!playerShips.hasNext()){
            gamePhase += 1;
            return;
         }
-        Ship piece = ships.next();
+        Ship piece = playerShips.next();
 
         // Center it up at the top
         int px = (player_board.getWidth() - piece.getWidth())/2;
@@ -280,6 +284,8 @@ public class BattleShipModel {
             int[] coords = comp.executeStrategy(player_board, gamePhase);
 
             result = player_board.testShot(coords[0], coords[1]);
+
+            System.out.println(result);
 
             comp.update(result == 1 || result == 2, result == 2);
         }

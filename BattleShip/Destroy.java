@@ -3,12 +3,10 @@ package BattleShip;
 import java.util.*;
 
 public class Destroy implements Strategy{
-
     /*
-    The function finds which of the previous moves have hit enemy ship. Then sends the coords and other information to
-    findTarget helper method, which chooses where to attack second.
+    The function finds which of the previous moves have hit enemy ship. Then chooses a direction to attack, centered
+    the original hit.
      */
-
     @Override
     public int[] executeMove(Board board, ArrayList<Move> moves) {
         Random random = new Random();
@@ -37,8 +35,19 @@ public class Destroy implements Strategy{
                     } else {
                         defaults = new int[][]{{1, 0}, {-1, 0}};
                     }
+
+
+                    if (moves.size() > 3 && !moves.get(moves.size() - 1).isHit() && !moves.get(moves.size() - 2).isHit()) {
+                        if (move.getCoord()[0] != origin[0]) {
+                            defaults = new int[][]{{0, 1}, {0, -1}};
+                        } else {
+                            defaults = new int[][]{{1, 0}, {-1, 0}};
+                        }
+                    }
+                    break;
                 }
             }
+
         }
         System.out.println(moves);
         System.out.println(Arrays.deepToString(defaults));
@@ -61,6 +70,10 @@ public class Destroy implements Strategy{
                     }
 
                     if (Math.abs(origin[0] - curr[0]) > maxSize || Math.abs(origin[1] - curr[1]) > maxSize) {
+                        break;
+                    }
+
+                    if (board.getBoard()[curr[0]][curr[1]].getState() == 1) {
                         break;
                     }
 

@@ -148,6 +148,9 @@ public class Board {
             viewGrid[square.x + x][square.y + y] = true;
         }
 
+        ship.x = x;
+        ship.y = y;
+
         return ADD_OK;
     }
 
