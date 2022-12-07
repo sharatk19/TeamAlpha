@@ -1,15 +1,14 @@
 package BattleShip;
 
+import java.util.ArrayList;
+
 public class PlayerShipCommand implements Command{
     private PlayerInterface player;
 
-    private Ship ship;
-
-    public PlayerShipCommand(PlayerInterface player, Ship ship){
+    public PlayerShipCommand(PlayerInterface player){
         this.player = player;
-        this.ship = ship;
     }
     public void execute(){
-        this.player.setPlayerShips(ship);
+        this.player.setPlayerShips();
     }
 }
