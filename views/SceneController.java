@@ -20,7 +20,7 @@ public class SceneController {
     private Scene scene;
     private Parent root;
 
-    public static Boolean colorbool = true;
+    public static Boolean colorbool = false;
     @FXML
     public static ToggleButton colorButton;
 
@@ -88,6 +88,7 @@ public class SceneController {
                 colorbool = true;
             } else {
                 colortext.setText("Color Blind Mode: Off");
+                colorbool = false;
             }
         }
         if (event.getSource() == musicButton){
