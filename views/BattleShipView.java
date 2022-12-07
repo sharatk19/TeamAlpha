@@ -39,6 +39,7 @@ public class BattleShipView {
     Map<String, Integer> ship_definitions;
 
     PlayerInterface new_playerInterface;
+
     PlayerShipCommand set_ships_players;
 
     PlayerMoveCommand player_move;
@@ -55,6 +56,8 @@ public class BattleShipView {
     ArrayList<ArrayList<Button>> temp;
     BorderPane borderPane;
     Canvas canvas;
+
+    PlayerCommandManager playerCommands;
     GraphicsContext gc; //the graphics context will be linked to the canvas
 
     int current_size;
@@ -76,6 +79,8 @@ public class BattleShipView {
      */
 
     public BattleShipView(BattleShipModel model, Stage stage) {
+
+        this.playerCommands = new PlayerCommandManager();
         this.game_started = false;
         this.model = model;
         colorBlindMode = SceneController.colorbool;
@@ -277,23 +282,12 @@ public class BattleShipView {
         var scene = new Scene(borderPane, 1000, 720);
         this.stage.setScene(scene);
         this.stage.show();
+
         // Create Player Board for Player to Place Ships
         createBoard();
         createAIBoard();
         paused = false;
     }
-
-
-    public void set_all_buttons_enabled(){
-        for(ArrayList<Button> array_ofButtons: temp){
-            for(Button button: array_ofButtons){
-                if(button.isDisable()){
-                    button = new Button();
-                }
-            }
-        }
-    }
-
 
     /**
      * Update board (paint pieces and score info)
@@ -303,8 +297,8 @@ public class BattleShipView {
 
             paintBoard();
             this.model.modelTick(0, 0, BattleShipModel.PlayerType.HUMAN);
-            player_ship_count.setText("Player SHIPS DESTROYED: " + model.get_ai_Board().getDeadShips().size());
-            ai_ship_count_label.setText("AI SHIPS DESTROYED: " + model.get_player_Board().getDeadShips().size());
+            player_ship_count.setText("THE PLAYER HAS DESTROYED: " + model.get_ai_Board().getDeadShips().size());
+            ai_ship_count_label.setText("THE AI HAS DESTROYED : " + model.get_player_Board().getDeadShips().size());
         }
     }
 
@@ -347,17 +341,13 @@ public class BattleShipView {
         for(int x = 0; x< 10; x++){
             for(int y = 0; y < 10; y++){
                 final Button[] button = {new Button()};
-                button[0].setTranslateX(550);
+                button[0].setTranslateX(400);
                 button[0].setTranslateY(200);
                 button[0].setPrefHeight(30);
                 button[0].setPrefWidth(30);
                 GridPane.setConstraints(button[0], y, x);
                 player_board.getChildren().add(button[0]);
                 temp2.add(button[0]);
-
-                int temp_x = x;
-                int temp_y = y;
-                final Button[] temp4 = {button[0]};
 
                 button[0].setOnMouseEntered(new EventHandler<MouseEvent>() {
                     @Override
@@ -375,7 +365,8 @@ public class BattleShipView {
                     public void handle(MouseEvent mouseEvent) {
                         if (model.getGamePhase() == 0) {
                             PlayerShipCommand playerShipCommand = new PlayerShipCommand(new_playerInterface);
-                            playerShipCommand.execute();
+                            playerCommands.setCommand(playerShipCommand);
+                            playerCommands.playerCommand_execution();
                         }
 
                         if (colorBlindMode) {
@@ -401,24 +392,26 @@ public class BattleShipView {
                 Button button = new Button();
                 button.setTranslateX(100);
                 button.setTranslateY(200);
-                button.setPrefHeight(30);
-                button.setPrefWidth(30);
+                button.setPrefHeight(100);
+                button.setPrefWidth(100);
                 GridPane.setConstraints(button, y, x);
                 ai_board.getChildren().add(button);
                 temp2.add(button);
                 button.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent actionEvent) {
+
                         PlayerMoveCommand playerMoveCommand = new PlayerMoveCommand(new_playerInterface, GridPane.getRowIndex(button), GridPane.getColumnIndex(button));
-                        playerMoveCommand.execute();
+                        playerCommands.setCommand(playerMoveCommand);
+                        playerCommands.playerCommand_execution();
 
 //                        System.out.println("Attacked Enemy on ShipSquare on Row:" + GridPane.getRowIndex(button));
 //                        System.out.println("Attacked Enemy on on Column:" + GridPane.getColumnIndex(button));
-//                        if (colorBlindMode) {
-//                            button.setStyle("-fx-background-color: #595959; -fx-text-fill: #7F7F7F;");
-//                        } else {
-//                            button.setStyle("-fx-background-color: grey; -fx-text-fill: grey;");
-//                        }
+                        if (colorBlindMode) {
+                            button.setStyle("-fx-background-color: #595959; -fx-text-fill: #7F7F7F;");
+                        } else {
+                            button.setStyle("-fx-background-color: grey; -fx-text-fill: grey;");
+                        }
                     }
                 });
             }
@@ -519,21 +512,6 @@ public class BattleShipView {
 //        }
 //
 //    }
-
-    /**
-     * Create the view to save a board to a file
-     */
-    private void createSaveView(){
-        SaveView saveView = new SaveView(this);
-    }
-
-    /**
-     * Create the view to select a board to load
-     */
-    private void createLoadView(){
-        LoadView loadView = new LoadView(this);
-    }
-
 
 
 }

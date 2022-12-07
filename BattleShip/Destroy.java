@@ -75,7 +75,10 @@ public class Destroy implements Strategy{
             }
 
         }
+        if(choices.size() > 0){
+            return choices.get(random.nextInt(0, choices.size()));
+        }
+        return choices.get(random.nextInt(choices.size(), 0));
 
-        return choices.get(random.nextInt(0, choices.size()));
     }
 }
