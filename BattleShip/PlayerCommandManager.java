@@ -19,4 +19,8 @@ public class PlayerCommandManager {
     public void playerCommand_execution() {
         this.currentCmd.execute();
     }
+
+    public Command get_cmd(){
+        return this.currentCmd;
+    }
 }
