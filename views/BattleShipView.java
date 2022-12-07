@@ -449,52 +449,9 @@ public class BattleShipView {
                     @Override
                     public void handle(ActionEvent actionEvent) {
 
-
-                        ShipSquare square = new ShipSquare(GridPane.getRowIndex(button), GridPane.getColumnIndex(button));
-                        if(current_player_Ship.isEmpty()){
-                            current_player_Ship.add(square);
-                        }
-                        //current_player_Ship.add(square);
-                        else{
+                            setup(temp_x, temp_y);
 
 
-
-                        // Go through every Square placed and check if the current x and y placed is y + 1, x + 1, x-1, y - 1
-                        // y+1 x + 1, x-1 y-1, x+1 y-1, x-1, y + 1
-
-
-                            for(ShipSquare ship_squares: current_player_Ship) {
-                                // Check if Any of the Squares are corners
-                                // Case 1
-                                if ((ship_squares.x + 1 == GridPane.getRowIndex(button) && ship_squares.y + 1 == GridPane.getColumnIndex(button))) {
-                                    System.out.println("Click on a Square that is VALID");
-                                    createBoard();
-                                }
-                                // Case 2 Top Left
-                                else if ((ship_squares.x - 1 == GridPane.getRowIndex(button) && ship_squares.y + 1 == GridPane.getColumnIndex(button))) {
-                                    System.out.println("Click on a Square that is VALID");
-                                    createBoard();
-                                }
-                                // Case 3
-                                else if ((ship_squares.x + 1 == GridPane.getRowIndex(button) && ship_squares.y - 1 == GridPane.getColumnIndex(button))) {
-                                    System.out.println("Click on a Square that is VALID");
-                                    createBoard();
-                                }
-                                // Case 4
-                                else if ((ship_squares.x - 1 == GridPane.getRowIndex(button) && ship_squares.y - 1 == GridPane.getColumnIndex(button))) {
-                                    System.out.println("Click on a Square that is VALID");
-                                    createBoard();
-                                } else {
-                                    // Call Player Interface since we found a square
-                                    current_player_Ship.add(square);
-                                    squares_placed += 1;
-
-
-
-                                }
-                            }
-
-                            }
     //                        if(ships_sizes.isEmpty())
 //                            System.out.println("Placed ShipSquare on Row:" + GridPane.getRowIndex(button));
 //                            System.out.println("Placed ShipSquare on Column:" + GridPane.getColumnIndex(button));
@@ -514,6 +471,50 @@ public class BattleShipView {
             temp2 = new ArrayList<>();
         }
         borderPane.getChildren().add(player_board);
+    }
+
+    public void setup(int x, int y){
+        ShipSquare square = new ShipSquare(x, y);
+        if(current_player_Ship.isEmpty()){
+            current_player_Ship.add(square);
+        }
+        //current_player_Ship.add(square);
+        else {
+
+
+            // Go through every Square placed and check if the current x and y placed is y + 1, x + 1, x-1, y - 1
+            // y+1 x + 1, x-1 y-1, x+1 y-1, x-1, y + 1
+
+
+            for (ShipSquare ship_squares : current_player_Ship) {
+                // Check if Any of the Squares are corners
+                // Case 1
+                if ((ship_squares.x + 1 == x && ship_squares.y + 1 == y)) {
+                    System.out.println("Click on a Square that is VALID");
+                    createBoard();
+                }
+                // Case 2 Top Left
+                else if ((ship_squares.x - 1 == x && ship_squares.y + 1 == y)) {
+                    System.out.println("Click on a Square that is VALID");
+                    createBoard();
+                }
+                // Case 3
+                else if ((ship_squares.x + 1 == x && ship_squares.y - 1 == y)) {
+                    System.out.println("Click on a Square that is VALID");
+                    createBoard();
+                }
+                // Case 4
+                else if ((ship_squares.x - 1 == x && ship_squares.y - 1 == y)) {
+                    System.out.println("Click on a Square that is VALID");
+                    createBoard();
+                } else {
+                    // Call Player Interface since we found a square
+                    current_player_Ship.add(square);
+                    squares_placed += 1;
+
+                }
+            }
+        }
     }
 
     public void createAIBoard(){
