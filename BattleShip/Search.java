@@ -12,15 +12,24 @@ public class Search implements Strategy{
     @Override
     public int[] executeMove(Board board, ArrayList<Move> moves) {
         Random r = new Random();
+        int x = 0;
+        int y = 0;
+        boolean canShoot = false;
 
-        int[] result = new int[]{r.nextInt(10), r.nextInt(10)};
+        while (!canShoot) {
+            x = r.nextInt(0, 10);
 
-        for(Move target: moves){
-            if(target.getCoord().equals(result)){
-                return executeMove(board, moves);
+            if (x % 2 == 0) {
+                y = r.nextInt(0, 5) * 2;
+            } else {
+                y = r.nextInt(0, 4) * 2 + 1;
+            }
+
+            if (board.getBoard()[x][y].getState() == 0) {
+                canShoot = true;
             }
         }
 
-        return result;
+        return new int[]{x, y};
     }
 }
