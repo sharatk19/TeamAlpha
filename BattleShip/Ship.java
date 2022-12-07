@@ -185,17 +185,38 @@ public class Ship {
         return new int[]{this.body[this.body.length-1].x + this.x, this.body[this.body.length-1].y + y};
     }
 
-    public boolean cHelper(int[] s1, int[] s2, int[] s3) {
-        return (s3[1] - s1[1]) * (s2[0] - s1[0]) > (s2[1] - s1[1]) * (s3[0] - s1[0]);
+    private boolean overlap(int[] s1, int[] s2, int[] s3) {
+        return s2[0] <= Math.max(s1[0], s3[0]) &&
+                s2[0] >= Math.min(s1[0], s3[0]) &&
+                s2[1] <= Math.max(s1[1], s3[1]) &&
+                s2[1] >= Math.min(s1[1], s3[1]);
+    }
+
+    private int cHelper(int[] s1, int[] s2, int[] s3) {
+        int result = (s2[1] - s1[1]) * (s3[0] - s2[0]) - (s3[1] - s2[1]) * (s2[0] - s1[0]);
+        if (result > 0) {
+            return 1;
+        } else if (result < 0) {
+            return 2;
+        } else {
+            return 0;
+        }
     }
 
     public boolean checkCollision(Ship ship, int x, int y) {
         this.x = x;
         this.y = y;
 
-        return cHelper(this.getAbsHead(), ship.getAbsHead(), ship.getAbsTail()) !=
-                cHelper(this.getAbsTail(), ship.getAbsHead(), ship.getAbsTail()) &&
-                cHelper(this.getAbsHead(), this.getAbsTail(), ship.getAbsHead()) !=
-                        cHelper(this.getAbsHead(), this.getAbsTail(), ship.getAbsTail());
+        int a = cHelper(this.getAbsHead(), this.getAbsTail(), ship.getAbsHead());
+        int b = cHelper(this.getAbsHead(), this.getAbsTail(), ship.getAbsTail());
+        int c = cHelper(ship.getAbsHead(), ship.getAbsTail(), this.getAbsHead());
+        int d = cHelper(ship.getAbsHead(), ship.getAbsTail(), this.getAbsTail());
+
+        if ((a != b) && (c != d)) return true;
+
+        return ((a == 0) && overlap(this.getAbsHead(), ship.getAbsHead(), this.getAbsTail())) ||
+                ((b == 0) && overlap(this.getAbsHead(), ship.getAbsTail(), this.getAbsTail())) ||
+                ((c == 0) && overlap(ship.getAbsHead(), this.getAbsHead(), ship.getAbsTail())) ||
+                ((d == 0) && overlap(ship.getAbsHead(), this.getAbsTail(), ship.getAbsTail()));
     }
 }

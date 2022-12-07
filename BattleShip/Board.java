@@ -36,6 +36,8 @@ public class Board {
         viewGrid = new boolean[width][height];
         backupGrid = new boolean[width][height];
         board = new BoardSquare[width][height];
+        liveShips = new ArrayList<>();
+        deadShips = new ArrayList<>();
 
         for (BoardSquare[] col: board) {
             for (int i = 0; i < height; i++) {
@@ -79,6 +81,14 @@ public class Board {
         return 0;
     }
 
+    public boolean[][] getViewGrid() {
+        return viewGrid;
+    }
+
+    public BoardSquare[][] getBoard() {
+        return board;
+    }
+
     /**
      * Returns true if the given block is filled in the board. Blocks outside of the
      * valid width/height area always return true (as we can't place anything there).
@@ -112,6 +122,7 @@ public class Board {
      * @return static int that defines result of placement
      */
     public int placePiece(Ship ship, int x, int y) {
+        committed = false;
         ShipSquare[] body = ship.getBody();
 
         if (getGrid(body[0].x + x, body[0].y + y) ||
@@ -169,6 +180,8 @@ public class Board {
             for (ShipSquare square: ship.getBody()) {
                 board[square.x + ship.x][square.y + ship.y].setShip(ship);
             }
+
+            liveShips.add(ship);
         }
 
 
