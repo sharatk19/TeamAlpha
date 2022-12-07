@@ -10,15 +10,18 @@ import java.util.ArrayList;
 public class PlayerInterface {
 
     public ArrayList<Move> moves;
-    public Board[] player_board;
+    public Board player_board;
 
 
-    public PlayerInterface(Board[] player_board){
+    public PlayerInterface(Board player_board){
         this.moves = new ArrayList<>();
         this.player_board = player_board;
     }
 
-    public void makeMove(Ship[] ships, int x, int y){
+    public void makeMove(int x, int y){
+        // Takes in Enemy Ships, and checks if Any Squares Hit
+
+        this.player_board.testShot(x, y);
 
         // Make a move
 
@@ -28,13 +31,14 @@ public class PlayerInterface {
         // or
 
 
-        for(Ship ship: ships){
-            for(ShipSquare square: ship.getBody()){
-                if(square.x == x && square.y == y){
-                    // Update the board at that square to True
-                }
-            }
-        }
+//        for(Ship ship: ships){
+//            for(ShipSquare square: ship.getBody()){
+//                if(square.x == x && square.y == y){
+//                    this.player_board.testShot(x, y);
+//                    // Update the board at that square to True
+//                }
+//            }
+//        }
 
         return;
     }
@@ -42,11 +46,12 @@ public class PlayerInterface {
     public void addMove(Move move){
         this.moves.add(move);
     }
-    public void setPlayerShips(Ship ship){
-//        for(Ship ship: ships){
-//            for(ShipSquare square: ship.getBody()){
-//                // call place piece on board but change call to ShipSquare instead of Ship
-//            }
-//        }
+    public void setPlayerShips(ArrayList<ShipSquare> shipsquares, String name){
+        Ship ship = new Ship(name, shipsquares.size());
+        ship.changeBody(shipsquares);
+
+        for(ShipSquare squares: ship.getBody()){
+            this.player_board.placeSquare(squares);
+        }
     }
 }

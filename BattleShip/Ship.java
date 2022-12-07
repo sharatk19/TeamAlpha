@@ -203,6 +203,12 @@ public class Ship {
         }
     }
 
+    public void changeBody(ArrayList<ShipSquare> squares){
+        for (int i = 0; i < this.body.length; i++) {
+            body[i] = squares.get(i);
+        }
+    }
+
     public boolean checkCollision(Ship ship, int x, int y) {
         this.x = x;
         this.y = y;
