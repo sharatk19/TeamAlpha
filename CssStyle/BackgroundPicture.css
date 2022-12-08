@@ -1,0 +1,4 @@
+.root{
+-fx-background-image:url('../CssStyle/battleship.jpg');
+-fx-background-size:cover;
+}
