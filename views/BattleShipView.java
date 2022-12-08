@@ -401,7 +401,7 @@ public class BattleShipView {
 //                        System.out.println("Attacked Enemy on ShipSquare on Row:" + GridPane.getRowIndex(button));
 //                        System.out.println("Attacked Enemy on Column:" + GridPane.getColumnIndex(button));
 //                        button.setStyle("-fx-background-color: #17871b; -fx-text-fill: white;");
-                        model.executeShot(GridPane.getRowIndex(button), GridPane.getColumnIndex(button), BattleShipModel.PlayerType.HUMAN);
+                        model.executeShot(GridPane.getRowIndex(button), GridPane.getColumnIndex(button));
                     }
                 });
             }
