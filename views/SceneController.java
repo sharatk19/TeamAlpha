@@ -54,14 +54,18 @@ public class SceneController {
     @FXML
     private AnchorPane menuBackground;
 
+    // Switch to main menu upon clicking back in the options screen.
     public void switchToMainMenu(ActionEvent event) throws IOException {
+        // If color blind mode is on it sets it to a black and white main menu, and if it isn't it sets it to a colored
+        // one. Same thing done for switchToOptions for 4 separate .fxml files based off music and color.
         if (colorbool){
             URL url = getClass().getResource("MainMenuBW.fxml");
-            root = FXMLLoader.load(url);
+            root = FXMLLoader.load(url); // Load the .fxml file into root.
 
             Node source = (Node)event.getSource();
-            stage = (Stage)source.getScene().getWindow();
-            scene = new Scene(root);
+            stage = (Stage)source.getScene().getWindow(); // Get the stage.
+            scene = new Scene(root); // Create a new scene with the root.
+            // Set the scene onto the stage and display it, same thing is done within all switching functions
             stage.setScene(scene);
             stage.show();
         } else {
@@ -77,6 +81,7 @@ public class SceneController {
     }
 
     public void switchToOptions(ActionEvent event) throws IOException {
+        // same implementation as switchToMenu
         if (colorbool & musicbool){
             URL url = getClass().getResource("OptionsMusicBW.fxml");
             root = FXMLLoader.load(url);
@@ -116,13 +121,14 @@ public class SceneController {
         }
     }
 
+    // Terminate the program when clicking quit.
     public void logout(ActionEvent event) throws IOException {
         Node source = (Node)event.getSource();
         stage = (Stage)source.getScene().getWindow();
         stage.close();
     }
 
-    // tie this to actually starting the game
+    // Start the battleship game upon clicking start
     public void start(ActionEvent event) throws IOException {
 
         Node source = (Node)event.getSource();
@@ -133,6 +139,7 @@ public class SceneController {
         this.model.startGame();
     }
 
+    // Assign functionality to the buttons and make changes based off of the choices the user makes in options.
     public void toggleButton(ActionEvent event) throws IOException {
         if (event.getSource() == colorButton){
             if (colorButton.isSelected()) {
@@ -160,10 +167,12 @@ public class SceneController {
         }
     }
 
+    // Play and stop music.
     private void playBackgroundMusic(){
         File musicfile = new File("music");
-        File song = musicfile.listFiles()[0];
-        Media media = new Media(song.toURI().toString());
+        File song = musicfile.listFiles()[0]; // Store the background music in a file.
+        Media media = new Media(song.toURI().toString()); // Create a new media object.
+        // Pass the media object into the media player and play it.
         player = new MediaPlayer(media);
         player.play();
     }
