@@ -101,7 +101,7 @@ public class BattleShipView {
 //        -fx-background-color: #81c483;
 //        colorblind -fx-background-color: #A8A8A8;
         borderPane = new BorderPane();
-//
+//      takes information from the controller for whether or not color blind mode is on
         if (colorBlindMode) {
             borderPane.setStyle("-fx-background-color: linear-gradient(to top, #A0A0A0, #6B6B6B)");
         } else {
@@ -180,7 +180,7 @@ public class BattleShipView {
         newButton.setId("New");
         newButton.setPrefSize(150, 50);
         newButton.setFont(new Font(12));
-
+        // takes information from the controller for whether or not color blind mode is on
         if (colorBlindMode) {
             newButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
         } else {
@@ -199,7 +199,7 @@ public class BattleShipView {
         startButton = new Button("Start Game");
         startButton.setId("start");
         startButton.setPrefSize(150, 50);
-
+        // takes information from the controller for whether or not color blind mode is on
         if (colorBlindMode) {
             startButton.setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
         } else {
@@ -377,7 +377,7 @@ public class BattleShipView {
                             PlayerShipCommand playerShipCommand = new PlayerShipCommand(new_playerInterface);
                             playerShipCommand.execute();
                         }
-
+                        // takes information from the controller for whether or not color blind mode is on
                         if (colorBlindMode) {
                             button[0].setStyle("-fx-background-color: #595959; -fx-text-fill: white;");
                         } else {
